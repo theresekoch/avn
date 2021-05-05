@@ -13,12 +13,22 @@ import pandas as pd
 import librosa
 import librosa.display
 import sklearn
-#import os
+import os
 import matplotlib.pyplot as plt
+import random
 
 class SegData:
-    def __init__(self, Bird_ID):
+    def __init__(self, Bird_ID, seg_table):
         self.Bird_ID = Bird_ID
+        self.seg_table = seg_table
+        
+    def save_as_csv(self, out_folder_path):
+        #check if SegData has a seg_table attribute. If so, save it. 
+        if hasattr(self, 'seg_table'):
+            self.seg_table.to_csv(out_folder_path + self.Bird_ID + "_seg_table.csv")
+        
+        if hasattr(self, 'seg_metrics'):
+            self.seg_metrics.to_csv(out_folder_path + self.Bird_ID + "_seg_metrics.csv")
 
 class Segmenter:
     
@@ -106,8 +116,7 @@ class Segmenter:
             else:
               all_data = curr_file_data
         
-        segmentation_data = SegData(Bird_ID)
-        segmentation_data.seg_table = all_data
+        segmentation_data = SegData(Bird_ID, all_data)
         segmentation_data.song_folder_path = song_folder_path
         return segmentation_data
       
@@ -491,7 +500,7 @@ class Metrics():
     def __init__(self):
         pass
     
-    def calc_F1 (segData, max_gap = 0.05):
+    def calc_F1 (seg_data, max_gap = 0.05):
         '''
         Given a avn.segmentation.Segmenter class object with a seg_table attribute 
         and a table containing ground truth segmentations of the the set of files, 
@@ -499,17 +508,17 @@ class Metrics():
         across all the files. 
         
         '''
-        truth_seg_table = segData.true_seg_table
+        truth_seg_table = seg_data.true_seg_table
         
         all_true_positives = 0
         all_false_positives = 0
         all_false_negatives = 0
         
         #loop through each individual file in the segmenter.seg_table
-        for current_file in np.unique(segData.seg_table['files']):
+        for current_file in np.unique(seg_data.seg_table['files']):
             #filter the seg_tables so that they contain only syllables from the 
             #current file. 
-            seg_current_file = segData.seg_table[segData.seg_table['files'] == current_file]
+            seg_current_file = seg_data.seg_table[seg_data.seg_table['files'] == current_file]
             truth_current_file = truth_seg_table[truth_seg_table['files'] == current_file]
             
             #get best matches of truth to segmenter onsets
@@ -531,11 +540,17 @@ class Metrics():
             all_false_negatives += false_negatives
             
         #calculate F1 score
-        segData.F1 = all_true_positives / (all_true_positives + 0.5 * (all_false_positives + all_false_negatives))
-        segData.precision = all_true_positives / (all_true_positives + all_false_positives)
-        segData.recall = all_true_positives / (all_true_positives + all_false_negatives)
+        F1 = all_true_positives / (all_true_positives + 0.5 * (all_false_positives + all_false_negatives))
+        precision = all_true_positives / (all_true_positives + all_false_positives)
+        recall = all_true_positives / (all_true_positives + all_false_negatives)
         
-        return segData
+        segmentation_metrics = pd.DataFrame({"F1": [F1], 
+                                   "precision" : [precision],  
+                                   "recall" : [recall]})
+    
+        seg_data.seg_metrics = segmentation_metrics
+        
+        return seg_data
         
         
             
@@ -719,9 +734,10 @@ class Plot():
     def __init__(self):
         pass
     
-    def plot_segmentations(segData, seg_label, true_label = 'Ground Truth', 
+    def plot_segmentations(seg_data, seg_label, plot_ground_truth = False, 
+                           true_label = 'Ground Truth', 
                            file_idx = 0, figsize = (20, 5), 
-                           seg_attribute = 'onsets'):
+                           seg_attribute = 'onsets', plot_title = ""):
         '''
           Generates a spectrogram of the given wave with segmenter onset times 
           and true onset times plotted over top
@@ -745,17 +761,12 @@ class Plot():
         
           '''
         #retrieve subset of true and seg_tables which correspond to individual file. 
-        file_name = np.unique(segData.seg_table['files'])[file_idx]
+        file_name = np.unique(seg_data.seg_table['files'])[file_idx]
         
-        seg_table_current_file = segData.seg_table[segData.seg_table['files'] == file_name]
-        
-        true_table_current_file = segData.true_seg_table[segData.true_seg_table['files'] == file_name]
-        
-        #select only true syllables, to prevent true noise onsets from being plotted
-        true_table_current_file = true_table_current_file[true_table_current_file['labels'] == 's']
+        seg_table_current_file = seg_data.seg_table[seg_data.seg_table['files'] == file_name]
         
         #load individual song wave file
-        song = dataloading.SongFile(segData.song_folder_path + "/" + file_name)
+        song = dataloading.SongFile(seg_data.song_folder_path + "/" + file_name)
         
         #make spectrogram
         spectrogram = plotting.make_spectrogram(song)
@@ -763,25 +774,37 @@ class Plot():
         #plot spectrogram -- should this also be a function?
         plotting.plot_spectrogram(spectrogram, song.sample_rate)
         
-        #plot seg onsets 
-        plt.eventplot(seg_table_current_file[seg_attribute],
+        if plot_ground_truth:
+            
+            true_table_current_file = seg_data.true_seg_table[seg_data.true_seg_table['files'] == file_name]
+            #select only true syllables, to prevent true noise onsets from being plotted
+            true_table_current_file = true_table_current_file[true_table_current_file['labels'] == 's']
+            
+            #plot seg onsets 
+            plt.eventplot(seg_table_current_file[seg_attribute],
                       lineoffsets = 15000, linelengths = 10000, 
                       color = 'white', label = seg_label)
         
-        #plot true onsets
-        plt.eventplot(true_table_current_file[seg_attribute], 
+            #plot true onsets
+            plt.eventplot(true_table_current_file[seg_attribute], 
                       lineoffsets = 5000, linelength = 10000, 
                       color = 'red', label = true_label)
+        else:
+            #plot seg onsets 
+            plt.eventplot(seg_table_current_file[seg_attribute],
+                      lineoffsets = 10000, linelengths = 20000, 
+                      color = 'white', label = seg_label)
         
         plt.legend()
+        plt.title(plot_title)
         plt.show()
         
     
-    def plot_seg_criteria(segData, segmenter, label, file_idx = 0, figsize = (20, 5),
+    def plot_seg_criteria(seg_data, segmenter, label, file_idx = 0, figsize = (20, 5),
                           feature_range = (100, 20000)):
         #load a single file
-        file_name = np.unique(segData.seg_table['files'])[file_idx]
-        song = dataloading.SongFile(segData.song_folder_path + file_name)
+        file_name = np.unique(seg_data.seg_table['files'])[file_idx]
+        song = dataloading.SongFile(seg_data.song_folder_path + file_name)
         
         #make spectrogram
         spectrogram = plotting.make_spectrogram(song)
@@ -814,17 +837,22 @@ class Utils:
         segmentation_scores = pd.DataFrame()
         
         for threshold in thresholds:
-            segData = segmenter.make_segmentation_table(Bird_ID, song_folder_path, 
+            seg_data = segmenter.make_segmentation_table(Bird_ID, song_folder_path, 
                                               upper_threshold = threshold, lower_threshold = lower_threshold)
-            segData = dataloading.Utils.add_ev_song_truth_table(segData, truth_table_path)
+            seg_data = dataloading.Utils.add_ev_song_truth_table(seg_data, truth_table_path)
             
-            segData = Metrics.calc_F1(segData)
+            seg_data = Metrics.calc_F1(seg_data)
             
-            segmentation_score = pd.DataFrame({"F1": [segData.F1], 
-                                               "precision" : [segData.precision],  
-                                               "recall" : [segData.recall], 
-                                               "upper_threshold" : [threshold], 
-                                               "lower_threshold" : [lower_threshold]})
+            #segmentation_score = pd.DataFrame({"F1": [seg_data.F1], 
+             #                                  "precision" : [seg_data.precision],  
+              #                                 "recall" : [seg_data.recall], 
+               #                                "upper_threshold" : [threshold], 
+                #                               "lower_threshold" : [lower_threshold]})
+                
+            segmentation_score = seg_data.seg_metrics
+            segmentation_score['upper_threshold'] = threshold
+            segmentation_score['lower_threshold'] = lower_threshold
+            
             segmentation_scores = segmentation_scores.append(segmentation_score)
             
         optimal_threshold = segmentation_scores['upper_threshold'].iloc[segmentation_scores['F1'].argmax()]
@@ -844,22 +872,20 @@ class Utils:
             
             song_folder = folder_path + Bird_ID + "/"
                 
-            segData = segmenter.make_segmentation_table(Bird_ID, song_folder, 
+            seg_data = segmenter.make_segmentation_table(Bird_ID, song_folder, 
                                               upper_threshold = upper_threshold, 
                                               lower_threshold = lower_threshold)
-            segData = dataloading.Utils.add_ev_song_truth_table(segData, song_folder + Bird_ID + truth_table_suffix)
+            seg_data = dataloading.Utils.add_ev_song_truth_table(seg_data, song_folder + Bird_ID + truth_table_suffix)
             
-            segData = Metrics.calc_F1(segData)
+            seg_data = Metrics.calc_F1(seg_data)
             
-            segmentation_score = pd.DataFrame({"F1": [segData.F1], 
-                                               "precision" : [segData.precision],  
-                                               "recall" : [segData.recall], 
-                                               "upper_threshold" : [upper_threshold], 
-                                               "lower_threshold" : [lower_threshold], 
-                                               "Bird_ID" : [Bird_ID]})
+            segmentation_score = seg_data.seg_metrics
+            segmentation_score['upper_threshold'] = upper_threshold
+            segmentation_score['lower_threshold'] = lower_threshold
+            segmentation_score['Bird_ID'] = Bird_ID
             segmentation_scores = segmentation_scores.append(segmentation_score)
             
-            segmentation_df = segData.seg_table
+            segmentation_df = seg_data.seg_table
             segmentation_df["Bird_ID"] = Bird_ID
             segmentations_df = segmentations_df.append(segmentation_df)
             
@@ -892,3 +918,61 @@ class Utils:
         optimal_threshold = mean_F1s.upper_threshold.iloc[mean_F1s.F1.argmax()]
         
         return optimal_threshold, peak_mean_F1, segmentation_scores
+    
+    def plot_segmentations_many_birds(segmenter, Bird_IDs, folder_path, seg_label,
+                                      upper_threshold, lower_threshold,
+                                      plot_ground_truth = False,
+                                      files_per_bird = 3, random_seed = 2021, 
+                                      true_label = "Ground Truth", figsize = (20, 5), 
+                                      seg_attribute = 'onsets', truth_table_suffix = "_syll_table.csv"):
+        
+        for Bird_ID in Bird_IDs:
+            song_folder = folder_path + Bird_ID + "/"
+            
+            truth_table_path = song_folder + Bird_ID + truth_table_suffix
+            
+            seg_data = segmenter.make_segmentation_table(Bird_ID, song_folder, 
+                                                         upper_threshold, 
+                                                         lower_threshold)
+            
+            if plot_ground_truth:
+                seg_data = dataloading.Utils.add_ev_song_truth_table(seg_data, truth_table_path)
+            
+            all_files = np.unique(seg_data.seg_table.files)
+            
+            random.seed(random_seed)
+            indices_to_plot = random.sample(range(0, len(all_files)), files_per_bird)
+            
+            for rand_index in indices_to_plot:
+                
+                Plot.plot_segmentations(seg_data, seg_label = seg_label, 
+                                        plot_ground_truth = plot_ground_truth,
+                                    true_label = true_label, figsize = figsize, 
+                                    seg_attribute = seg_attribute, file_idx = rand_index, 
+                                    plot_title = all_files[rand_index])
+    
+    def make_segmentation_table_many_birds(segmenter, Bird_IDs, folder_path, 
+                                           upper_threshold, lower_threshold, 
+                                           save_to_csv = False, out_file_dir = None):
+        segmentations_df = pd.DataFrame()
+        
+        for Bird_ID in Bird_IDs:
+            
+            song_folder = folder_path + Bird_ID + "/"
+                
+            seg_data = segmenter.make_segmentation_table(Bird_ID, song_folder, 
+                                              upper_threshold = upper_threshold, 
+                                              lower_threshold = lower_threshold)
+            
+            segmentation_df = seg_data.seg_table
+            segmentation_df["Bird_ID"] = Bird_ID
+            segmentations_df = segmentations_df.append(segmentation_df)
+            
+            if save_to_csv:
+                if not os.path.isdir(out_file_dir):
+                    raise ValueError("The supplied out file directory does not exist. out_file_dir: " + out_file_dir)
+                    
+                seg_data.save_as_csv(out_file_dir)
+                
+        return segmentations_df
+                
