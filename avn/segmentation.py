@@ -22,10 +22,13 @@ class SegData:
         self.Bird_ID = Bird_ID
         self.seg_table = seg_table
         
-    def save_as_csv(self, folder_path):
+    def save_as_csv(self, out_folder_path):
         #check if SegData has a seg_table attribute. If so, save it. 
         if hasattr(self, 'seg_table'):
-            self.seg_table.to_csv(folder_path + self.Bird_ID + "_seg_table.csv")
+            self.seg_table.to_csv(out_folder_path + self.Bird_ID + "_seg_table.csv")
+        
+        if hasattr(self, 'seg_metrics'):
+            self.seg_metrics.to_csv(out_folder_path + self.Bird_ID + "_seg_metrics.csv")
 
 class Segmenter:
     
@@ -114,7 +117,6 @@ class Segmenter:
               all_data = curr_file_data
         
         segmentation_data = SegData(Bird_ID, all_data)
-        #segmentation_data.seg_table = all_data
         segmentation_data.song_folder_path = song_folder_path
         return segmentation_data
       
@@ -538,9 +540,15 @@ class Metrics():
             all_false_negatives += false_negatives
             
         #calculate F1 score
-        seg_data.F1 = all_true_positives / (all_true_positives + 0.5 * (all_false_positives + all_false_negatives))
-        seg_data.precision = all_true_positives / (all_true_positives + all_false_positives)
-        seg_data.recall = all_true_positives / (all_true_positives + all_false_negatives)
+        F1 = all_true_positives / (all_true_positives + 0.5 * (all_false_positives + all_false_negatives))
+        precision = all_true_positives / (all_true_positives + all_false_positives)
+        recall = all_true_positives / (all_true_positives + all_false_negatives)
+        
+        segmentation_metrics = pd.DataFrame({"F1": [F1], 
+                                   "precision" : [precision],  
+                                   "recall" : [recall]})
+    
+        seg_data.seg_metrics = segmentation_metrics
         
         return seg_data
         
@@ -835,11 +843,16 @@ class Utils:
             
             seg_data = Metrics.calc_F1(seg_data)
             
-            segmentation_score = pd.DataFrame({"F1": [seg_data.F1], 
-                                               "precision" : [seg_data.precision],  
-                                               "recall" : [seg_data.recall], 
-                                               "upper_threshold" : [threshold], 
-                                               "lower_threshold" : [lower_threshold]})
+            #segmentation_score = pd.DataFrame({"F1": [seg_data.F1], 
+             #                                  "precision" : [seg_data.precision],  
+              #                                 "recall" : [seg_data.recall], 
+               #                                "upper_threshold" : [threshold], 
+                #                               "lower_threshold" : [lower_threshold]})
+                
+            segmentation_score = seg_data.seg_metrics
+            segmentation_score['upper_threshold'] = threshold
+            segmentation_score['lower_threshold'] = lower_threshold
+            
             segmentation_scores = segmentation_scores.append(segmentation_score)
             
         optimal_threshold = segmentation_scores['upper_threshold'].iloc[segmentation_scores['F1'].argmax()]
@@ -866,12 +879,10 @@ class Utils:
             
             seg_data = Metrics.calc_F1(seg_data)
             
-            segmentation_score = pd.DataFrame({"F1": [seg_data.F1], 
-                                               "precision" : [seg_data.precision],  
-                                               "recall" : [seg_data.recall], 
-                                               "upper_threshold" : [upper_threshold], 
-                                               "lower_threshold" : [lower_threshold], 
-                                               "Bird_ID" : [Bird_ID]})
+            segmentation_score = seg_data.seg_metrics
+            segmentation_score['upper_threshold'] = upper_threshold
+            segmentation_score['lower_threshold'] = lower_threshold
+            segmentation_score['Bird_ID'] = Bird_ID
             segmentation_scores = segmentation_scores.append(segmentation_score)
             
             segmentation_df = seg_data.seg_table
@@ -939,4 +950,5 @@ class Utils:
                                     true_label = true_label, figsize = figsize, 
                                     seg_attribute = seg_attribute, file_idx = rand_index, 
                                     plot_title = all_files[rand_index])
+                
                 
