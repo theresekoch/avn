@@ -13,7 +13,7 @@ import pandas as pd
 import librosa
 import librosa.display
 import sklearn
-#import os
+import os
 import matplotlib.pyplot as plt
 import random
 
@@ -950,5 +950,29 @@ class Utils:
                                     true_label = true_label, figsize = figsize, 
                                     seg_attribute = seg_attribute, file_idx = rand_index, 
                                     plot_title = all_files[rand_index])
+    
+    def make_segmentation_table_many_birds(segmenter, Bird_IDs, folder_path, 
+                                           upper_threshold, lower_threshold, 
+                                           save_to_csv = False, out_file_dir = None):
+        segmentations_df = pd.DataFrame()
+        
+        for Bird_ID in Bird_IDs:
+            
+            song_folder = folder_path + Bird_ID + "/"
                 
+            seg_data = segmenter.make_segmentation_table(Bird_ID, song_folder, 
+                                              upper_threshold = upper_threshold, 
+                                              lower_threshold = lower_threshold)
+            
+            segmentation_df = seg_data.seg_table
+            segmentation_df["Bird_ID"] = Bird_ID
+            segmentations_df = segmentations_df.append(segmentation_df)
+            
+            if save_to_csv:
+                if not os.path.isdir(out_file_dir):
+                    raise ValueError("The supplied out file directory does not exist. out_file_dir: " + out_file_dir)
+                    
+                seg_data.save_as_csv(out_file_dir)
+                
+        return segmentations_df
                 
