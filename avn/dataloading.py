@@ -79,7 +79,7 @@ class Utils:
         
           return syll_table
       
-    def add_ev_song_truth_table(segData, file_path):
+    def add_ev_song_truth_table(seg_data, file_path):
         true_seg_table = pd.read_csv(file_path)
         
         true_seg_table['onsets'] = true_seg_table['onsets'] / 1000
@@ -87,6 +87,6 @@ class Utils:
         
         true_seg_table['files'] = true_seg_table['files'].str.split('.not', 1).str[0]
         
-        segData.true_seg_table = true_seg_table
+        seg_data.true_seg_table = true_seg_table
         
-        return segData
+        return seg_data
