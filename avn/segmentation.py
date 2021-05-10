@@ -1155,29 +1155,78 @@ class Utils:
     
     def threshold_optimization(segmenter, Bird_ID, song_folder_path, truth_table_path, 
                                threshold_range, threshold_step, lower_threshold):
+        """
+        Tests a range of upper threshold values for threshold-based segmentation
+        to find the threshold which results in the best F1 score for one bird. 
+
+        Parameters
+        ----------
+        segmenter : avn.segmentation.Segmenter daughter class object
+            Determines the segmentation criteria that will be used for threshold
+            segmentation (ie RMSE, MFCC, RMSEDerivative)
+        Bird_ID : str
+            String containing a unique identifier for subject bird.
+        song_folder_path : str
+            Path to the folder containing all .wav files to be segmented for 
+            the subject bird.
+        truth_table_path : str
+            Path to the .csv file generated with evsonganaly which contains the 
+            ground truth syllable segmentations. 
+        threshold_range : tuple of floats
+            Specifies the range thresholds to test. 
+        threshold_step : float
+            The size of the step between consequtive thresholds to be tested.
+        lower_threshold : float
+            Lower segmentation thrshold for determining syllable offsets (fixed).
+
+        Returns
+        -------
+        optimal_threshold : float
+            Value of the threshold which results in the best F1 score.
+        peak_F1 : float
+            F1 score of segmentation using optimal threshold.
+        segmentation_scores : pandas DataFrame
+            DataFrame with columns `F1`, `precision`, `recall`, `upper_threshold`, 
+            and `lower_threshold` which contain the metrics of segmentation at 
+            every segmentation threshold tested. This can be useful for plotting 
+            the relationship between the threshold value and metrics.
+            
+        Notes
+        -----
+        Selecting a very wide `threshold_range` and small `threshold_step` can 
+        make this quite slow to run. It is recommended to test a wide 
+        `threshold_range` with large `threshold_step` and plot F1 across 
+        threshold values using `segmentation_scores` initially, then once 
+        you have a better idea of the ballpark of the peak threshold try using 
+        a smaller `threshold_range` with a finer `threshold_step`.
+
+        """
         
+        #create array of thresholds to test
         thresholds = np.arange(threshold_range[0], threshold_range[1], threshold_step)
         segmentation_scores = pd.DataFrame()
         
+        #loop over every threshold and calculate the metrics resulting from 
+            #that segmentation.
         for threshold in thresholds:
+            #Generate automatic segmentations with given threshold
             seg_data = segmenter.make_segmentation_table(Bird_ID, song_folder_path, 
                                               upper_threshold = threshold, lower_threshold = lower_threshold)
+            #load ground truth segmentation from memory
             seg_data = dataloading.Utils.add_ev_song_truth_table(seg_data, truth_table_path)
             
+            #calculate segmentation metrics
             seg_data = Metrics.calc_F1(seg_data)
             
-            #segmentation_score = pd.DataFrame({"F1": [seg_data.F1], 
-             #                                  "precision" : [seg_data.precision],  
-              #                                 "recall" : [seg_data.recall], 
-               #                                "upper_threshold" : [threshold], 
-                #                               "lower_threshold" : [lower_threshold]})
-                
+            #package output into segmentation_score DataFrame
             segmentation_score = seg_data.seg_metrics
             segmentation_score['upper_threshold'] = threshold
             segmentation_score['lower_threshold'] = lower_threshold
             
+            #append segmentation data from this threshold to growing DataFrame
             segmentation_scores = segmentation_scores.append(segmentation_score)
             
+        #Find threshold which results in peak F1 score, and value of peak F1 score.    
         optimal_threshold = segmentation_scores['upper_threshold'].iloc[segmentation_scores['F1'].argmax()]
         peak_F1 = segmentation_scores['F1'].max()
         
@@ -1186,28 +1235,73 @@ class Utils:
     def calc_F1_many_birds(segmenter, Bird_IDs, 
                            folder_path, upper_threshold, lower_threshold, 
                            truth_table_suffix = "_syll_table.csv"):
-        
+        """
+        Calculate the segmentation metrics for all birds in `Bird_IDs` with 
+        a given method and threshold. 
+
+        Parameters
+        ----------
+        segmenter : avn.segmentation.Segmenter daughter class object.
+            Determines the segmentation method. 
+        Bird_IDs : List of strings
+            List of unique bird identifiers. These should correspond to the 
+            names of subfolders within the `folder_path` directory.
+        folder_path : str
+            Path to a local directory containing subdirectories named with the 
+            Bird IDs in `Bird_IDs`, which in turn contain the .wav files to be
+            segmented.
+        upper_threshold : float > lower_threshold
+            Value of the upper segmentation criteria threshold for detecting
+            syllable onsets. 
+        lower_threshold : float < upper_threshold
+            Value of the lower segmentation criteria threshold used for detecting 
+            syllable offsets. 
+        truth_table_suffix : str, optional
+            This function requires that the truth table data be located in a 
+            .csv file within folder_path\Bird_ID\ and begin with the Bird_ID
+            followed by some descriptor. This is used to specify that final 
+            part of the file name. The default is "_syll_table.csv".
+
+        Returns
+        -------
+        segmentation_scores : pandas DataFrame
+            DataFrame with columns `F1`, `precision`, `recall`, `upper_threshold`,
+            `lower_threshold`, and `Bird_ID`, which contains the segmentation
+            metrics for each bird. 
+        segmentations_df : pandas DataFrame
+            DataFrame with columns `onsets, `offsets`, `files`, and `Bird_ID` 
+            which contains the onset and offset timestamps of every segmented 
+            syllable in each file for each bird. 
+
+        """
+        #initialize empty dataframes to append to
         segmentation_scores = pd.DataFrame()
         
         segmentations_df = pd.DataFrame()
         
+        #Loop through each bird
         for Bird_ID in Bird_IDs:
-            
+            #construct full path to folder containing song files. 
             song_folder = folder_path + Bird_ID + "/"
-                
+            
+            #make segmentations
             seg_data = segmenter.make_segmentation_table(Bird_ID, song_folder, 
                                               upper_threshold = upper_threshold, 
                                               lower_threshold = lower_threshold)
+            #load ground truth segmentations from memory
             seg_data = dataloading.Utils.add_ev_song_truth_table(seg_data, song_folder + Bird_ID + truth_table_suffix)
             
+            #calculate segmentation accuracy metrics. 
             seg_data = Metrics.calc_F1(seg_data)
             
+            #package metrics information into a dataframe
             segmentation_score = seg_data.seg_metrics
             segmentation_score['upper_threshold'] = upper_threshold
             segmentation_score['lower_threshold'] = lower_threshold
             segmentation_score['Bird_ID'] = Bird_ID
             segmentation_scores = segmentation_scores.append(segmentation_score)
             
+            #package segmentation data into a dataframe
             segmentation_df = seg_data.seg_table
             segmentation_df["Bird_ID"] = Bird_ID
             segmentations_df = segmentations_df.append(segmentation_df)
@@ -1218,25 +1312,83 @@ class Utils:
     def threshold_optimization_many_birds(segmenter, Bird_IDs, folder_path,
                                           threshold_range, threshold_step, lower_threshold, 
                                           truth_table_suffix = "_syll_table.csv"):
+        """
+        Finds the optimal segmentation threshold across multiple birds at once. 
+
+        Parameters
+        ----------
+        segmenter : avn.segmentation.Segmenter child class type
+            This determines the segmentation criteria used for threshold 
+            segmentation. 
+        Bird_IDs : List of strings
+            List of unique bird identifiers. These should correspond to the 
+            names of subfolders within the `folder_path` directory.
+        folder_path : str
+            Path to a local directory containing subdirectories named with the 
+            Bird IDs in `Bird_IDs`, which in turn contain the .wav files to be
+            segmented.
+        threshold_range : tuple of floats
+            Specifies the range thresholds to test. 
+        threshold_step : float
+            The size of the step between consequtive thresholds to be tested.
+        lower_threshold : float
+            Lower segmentation thrshold for determining syllable offsets (fixed).
+        truth_table_suffix : str, optional
+            This function requires that the truth table data be located in a 
+            .csv file within folder_path\Bird_ID\ and begin with the Bird_ID
+            followed by some descriptor. This is used to specify that final 
+            part of the file name. The default is "_syll_table.csv".
+
+        Returns
+        -------
+        optimal_threshold : float
+            Value of the threshold which results in the best mean F1 score 
+            across all birds.
+        peak_mean_F1 : float
+            Mean F1 score of segmentation using optimal threshold across all birds.
+        segmentation_scores : pandas DataFrame
+            DataFrame with columns `F1`, `precision`, `recall`, `upper_threshold`, 
+            `lower_threshold`, and `Bird_ID` which contain the metrics of 
+            segmentation at every segmentation threshold tested for every bird. 
+            This can be useful for plotting the relationship between the 
+            threshold value and metrics.
         
+        Notes
+        -----
+        Selecting a very wide `threshold_range` and small `threshold_step` can 
+        make this quite slow to run. It is recommended to test a wide 
+        `threshold_range` with large `threshold_step` and plot F1 across 
+        threshold values using `segmentation_scores` initially, then once 
+        you have a better idea of the ballpark of the peak threshold try using 
+        a smaller `threshold_range` with a finer `threshold_step`.
+        
+        """
+        #initialize empty DataFrame to append to. 
         segmentation_scores = pd.DataFrame()
         
+        #loop through each bird
         for Bird_ID in Bird_IDs:
+            #create full path to song folder
             song_folder = folder_path + Bird_ID + "/"
-            
+            #create full path to ground truth segmentation data
             truth_table_path = song_folder + Bird_ID + truth_table_suffix
             
+            #segmented bird with every threshold in the range and calculate 
+                #metrics for each of those segmentations
             optimal_thresh, peak_F1, threshold_table = Utils.threshold_optimization(segmenter, Bird_ID, 
                                                                                     song_folder, truth_table_path,
                                                                                     threshold_range, 
                                                                                     threshold_step, 
-                                                                                    lower_threshold)
+                                                                                   lower_threshold)
+            #package segmentation metrics into DataFrame
             threshold_table['Bird_ID'] = Bird_ID
             segmentation_scores = segmentation_scores.append(threshold_table)
-            
+        #calculate the mean F1 score for every upper_threshold value across birds.     
         mean_F1s = segmentation_scores.groupby("upper_threshold").mean()
+        #find best mean F1 score. 
         peak_mean_F1 = mean_F1s.F1.max()
         
+        #Determine the threshold which resulted in the peak mean F1 score.
         mean_F1s.reset_index(inplace = True)
         optimal_threshold = mean_F1s.upper_threshold.iloc[mean_F1s.F1.argmax()]
         
@@ -1248,7 +1400,64 @@ class Utils:
                                       files_per_bird = 3, random_seed = 2021, 
                                       true_label = "Ground Truth", figsize = (20, 5), 
                                       seg_attribute = 'onsets', truth_table_suffix = "_syll_table.csv"):
+        """
+        Plots `files_per_bird` number of random example song spectrograms 
+        with automatically generated segmentations (and optionally ground truth
+        segmentations) overlaid for each bird in Bird_IDs. 
         
+        Parameters
+        ----------
+        segmenter : avn.segmentation.Segmenter child class type
+            This determines the segmentation criteria used for threshold 
+            segmentation. 
+        Bird_IDs : List of strings
+            List of unique bird identifiers. These should correspond to the 
+            names of subfolders within the `folder_path` directory.
+        folder_path : str
+            Path to a local directory containing subdirectories named with the 
+            Bird IDs in `Bird_IDs`, which in turn contain the .wav files to be
+            segmented.
+        seg_label : str
+            Label for automatic syllable segmentations to be displayed in legend.
+        upper_threshold : float > lower_threshold
+            Value of the upper segmentation criteria threshold for detecting
+            syllable onsets. 
+        lower_threshold : float < upper_threshold
+            Value of the lower segmentation criteria threshold used for detecting 
+            syllable offsets. 
+        plot_ground_truth : bool, optional
+            If True, both the automatically generated and ground truth syllable
+            segmentations will be plotted. If False, only automatically 
+            generated syllable segmentations will be plotted. The default is 
+            False.
+        files_per_bird : int>=1, optional
+            The number of files to plot from each bird. The default is 3.
+        random_seed : optional
+            Any object that can be converted to an integer. This ensures that 
+            the same set of randomly selected files will be plotted every time 
+            this function is run with the same random_seed value. 
+            The default is 2021.
+        true_label : str, optional
+            Label for ground truth syllable segmentations to be displayed in 
+            legend. Only used if `plot_ground_truth` == True. 
+            The default is 'Ground Truth'.
+        figsize : tuple of floats, optional
+            Specifies the dimensions of the output plot. The default is (20, 5).
+        seg_attribute : {'onsets', 'offsets'}, optional
+            Specifies whether syllable onset times or offset times should be 
+            displayed. The default is 'onsets'.
+       truth_table_suffix : str, optional
+            This function requires that the truth table data be located in a 
+            .csv file within folder_path\Bird_ID\ and begin with the Bird_ID
+            followed by some descriptor. This is used to specify that final 
+            part of the file name. The default is "_syll_table.csv".
+
+
+        Returns
+        -------
+        None.
+
+        """
         for Bird_ID in Bird_IDs:
             song_folder = folder_path + Bird_ID + "/"
             
@@ -1277,20 +1486,67 @@ class Utils:
     def make_segmentation_table_many_birds(segmenter, Bird_IDs, folder_path, 
                                            upper_threshold, lower_threshold, 
                                            save_to_csv = False, out_file_dir = None):
+        """
+        Generates syllable segmentations for many files across many birds.
+
+        Parameters
+        ----------
+        segmenter : avn.segmentation.Segmenter child class type
+            This determines the segmentation criteria used for threshold 
+            segmentation. 
+        Bird_IDs : List of strings
+            List of unique bird identifiers. These should correspond to the 
+            names of subfolders within the `folder_path` directory.
+        folder_path : str
+            Path to a local directory containing subdirectories named with the 
+            Bird IDs in `Bird_IDs`, which in turn contain the .wav files to be
+            segmented.
+        upper_threshold : float > lower_threshold
+            Value of the upper segmentation criteria threshold for detecting
+            syllable onsets. 
+        lower_threshold : float < upper_threshold
+            Value of the lower segmentation criteria threshold used for detecting 
+            syllable offsets.
+        save_to_csv : bool, optional
+            If True, segmentation table and metrics table .csv files will be saved 
+            for each bird in the `out_file_dir` directory. These will have 
+            the Bird_ID in the file name. The default is False.
+        out_file_dir : str, optional
+            Path to a local directory in which to save segmentation table 
+            and metrics tables for each bird. This will only be used if 
+            `save_to_csv` == True. The default is None.
+
+        Returns
+        -------
+        segmentations_df : pandas DataFrame
+            DataFrame with columns `onsets`, `offsets`, `files` and `Bird_ID` 
+            which contains syllable onset and offset timestamps in seconds 
+            for every automatically segmented syllable in every file for every 
+            bird.
+
+        """
+        
+        #initialize empty dataframe to append to
         segmentations_df = pd.DataFrame()
         
+        #loop over each bird
         for Bird_ID in Bird_IDs:
             
+            #determine complete path to song folder
             song_folder = folder_path + Bird_ID + "/"
-                
+            
+            #generate segmentations
             seg_data = segmenter.make_segmentation_table(Bird_ID, song_folder, 
                                               upper_threshold = upper_threshold, 
                                               lower_threshold = lower_threshold)
             
+            #package segmentations into DataFrame
             segmentation_df = seg_data.seg_table
             segmentation_df["Bird_ID"] = Bird_ID
             segmentations_df = segmentations_df.append(segmentation_df)
             
+            #if save_to_scv = True, check that the `out_file_dir` exists, and 
+                #if it does same the seg data to a csv. 
             if save_to_csv:
                 if not os.path.isdir(out_file_dir):
                     raise ValueError("The supplied out file directory does not exist. out_file_dir: " + out_file_dir)
