@@ -155,10 +155,10 @@ class Segmenter:
             String containing a unique identifier for subject bird.
         song_folder_path : str
             Path to a local directory containing all .wav files to be segmented.
-        upper_threshold : int > lower_threshold
+        upper_threshold : float > lower_threshold
             Value of the upper segmentation criteria threshold for detecting 
             syllable onsets. 
-        lower_threshold : int < upper_threshold
+        lower_threshold : float < upper_threshold
             Value of the lower segmentation criteria threshold used for detecting
             syllable offsets when onset to onset segmentation results in a 
             syllable longer than `max_syll_duration`.
@@ -261,7 +261,7 @@ class Segmenter:
         seg_criteria : numpy ndarray, 1D
             1 dimensional numpy array containing the segmentation criteria 
             values for a wave file for treshold segmentation. 
-        thresh : int
+        thresh : float
             Value of threshold to be created.
 
         Returns
@@ -417,10 +417,10 @@ class RMSE(Segmenter):
             If True, the song will be bandpass filtered before calculating the 
             RMSE. If False, the RMSE will be calculated on the song as-is. 
             The default is True.
-        lower_cutoff : int >=0, optional
+        lower_cutoff : float >=0, optional
             The lower frequency limit in Hz used to bandpass filter the input 
             wave before calculating the RMSE. The default is 200.
-        upper_cutoff : int > lower_cutoff, optional
+        upper_cutoff : float > lower_cutoff, optional
             The upper frequency limit in Hz used to bandpass filter the input
             wave before calculating the RMSE. The default is 9000.
         rescale : bool, optional
@@ -482,10 +482,10 @@ class RMSEDerivative(Segmenter):
             If True, the song will be bandpass filtered before calculating the 
             RMSE. If False, the RMSE will be calculated on the song as-is. 
             The default is True.
-        lower_cutoff : int >=0, optional
+        lower_cutoff : float >=0, optional
             The lower frequency limit in Hz used to bandpass filter the input 
             wave before calculating the RMSE. The default is 200.
-        upper_cutoff : int > lower_cutoff, optional
+        upper_cutoff : float > lower_cutoff, optional
             The upper frequency limit in Hz used to bandpass filter the input
             wave before calculating the RMSE. The default is 9000.
         rescale : bool, optional
@@ -554,10 +554,10 @@ class MFCC(Segmenter):
             If True, the song will be bandpass filtered before calculating the 
             MFCC. If False, the MFCC will be calculated on the song as-is. 
             The default is True.
-        lower_cutoff : int >=0, optional
+        lower_cutoff : float >=0, optional
             The lower frequency limit in Hz used to bandpass filter the input 
             wave before calculating the MFCC. The default is 200.
-        upper_cutoff : int > lower_cutoff, optional
+        upper_cutoff : float > lower_cutoff, optional
             The upper frequency limit in Hz used to bandpass filter the input
             wave before calculating the MFCC. The default is 9000.
         rescale : bool, optional
@@ -618,10 +618,10 @@ class MFCCDerivative(Segmenter):
             If True, the song will be bandpass filtered before calculating the 
             MFCC. If False, the MFCC will be calculated on the song as-is. 
             The default is True.
-        lower_cutoff : int >=0, optional
+        lower_cutoff : float >=0, optional
             The lower frequency limit in Hz used to bandpass filter the input 
             wave before calculating the MFCC. The default is 200.
-        upper_cutoff : int > lower_cutoff, optional
+        upper_cutoff : float > lower_cutoff, optional
             The upper frequency limit in Hz used to bandpass filter the input
             wave before calculating the MFCC. The default is 9000.
         rescale : bool, optional
