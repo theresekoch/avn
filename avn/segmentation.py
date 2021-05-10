@@ -998,6 +998,11 @@ class Metrics():
         
         
 class Plot():
+    """
+    Contains functions for plotting automatically generated syllable segmentations, 
+    segmentation criteria and/or ground truth syllable segmentations over 
+    spectrograms. 
+    """
     def __init__(self):
         pass
     
@@ -1005,29 +1010,46 @@ class Plot():
                            true_label = 'Ground Truth', 
                            file_idx = 0, figsize = (20, 5), 
                            seg_attribute = 'onsets', plot_title = ""):
-        '''
-          Generates a spectrogram of the given wave with segmenter onset times 
-          and true onset times plotted over top
-        
-          Inputs
-          -----
-          truth_current_file: Pandas DataFrame, Subset of a full true syllable table 
-          (imported from evsonganaly and cleaned) containing only rows which correspond 
-          to the specified wave. 
-        
-          mfcc_current_file: Pandas DataFrame, Subset of full syllable table which 
-          contains only rows which correspond to the specified wave.
-        
-          wave: numpy array, 1D, Containing sample values from an audio file.
-        
-          sample_rate: int > 0, the sample rate of the wave in samples per second.
-        
-          Outputs
-          -----
-          None
-        
-          '''
-        #retrieve subset of true and seg_tables which correspond to individual file. 
+        """
+        Plots the spectrogram of a given wave file with automatically generated 
+        syllable onsets or offsets plotted over top. Ground truth segmentations
+        can be plotted in addition to automatically generate segmentations 
+        when available. 
+
+        Parameters
+        ----------
+        seg_data : avn.segmentation.SegData object
+            SegData object containing automatic syllable segmentations in it's 
+            `.seg_table` attribute, and optionally also ground truth 
+            segmentations in its `.true_seg_table` attribute. 
+        seg_label : str
+            Label for automatic syllable segmentations to be displayed in legend.
+        plot_ground_truth : bool, optional
+            If True, both the automatically generated and ground truth syllable
+            segmentations will be plotted. If False, only automatically 
+            generated syllable segmentations will be plotted. The default is 
+            False.
+        true_label : str, optional
+            Label for ground truth syllable segmentations to be displayed in 
+            legend. Only used if `plot_ground_truth` == True. 
+            The default is 'Ground Truth'.
+        file_idx : int >=0, <total number of files segmented in `seg_data`, optional
+            The index of the single file within `seg_data` to be plotted. 
+            The default is 0.
+        figsize : tuple of floats, optional
+            Specifies the dimensions of the output plot. The default is (20, 5).
+        seg_attribute : {'onsets', 'offsets'}, optional
+            Specifies whether syllable onset times or offset times should be 
+            displayed. The default is 'onsets'.
+        plot_title : str, optional
+            Title of the generated plot. The default is "".
+
+        Returns
+        -------
+        None.
+
+        """
+        #retrieve subset of seg_table which corresponds to individual file. 
         file_name = np.unique(seg_data.seg_table['files'])[file_idx]
         
         seg_table_current_file = seg_data.seg_table[seg_data.seg_table['files'] == file_name]
@@ -1038,9 +1060,11 @@ class Plot():
         #make spectrogram
         spectrogram = plotting.make_spectrogram(song)
         
-        #plot spectrogram -- should this also be a function?
+        #plot spectrogram 
         plotting.plot_spectrogram(spectrogram, song.sample_rate)
         
+        #if plot_ground_truth == True, retrieve subset of true_seg_table 
+            #which corresponds to individual file and plot them
         if plot_ground_truth:
             
             true_table_current_file = seg_data.true_seg_table[seg_data.true_seg_table['files'] == file_name]
@@ -1069,6 +1093,35 @@ class Plot():
     
     def plot_seg_criteria(seg_data, segmenter, label, file_idx = 0, figsize = (20, 5),
                           feature_range = (100, 20000)):
+        """
+        Plots a given segmentation criteria (ie MFCC, RMSE, RMSE Derivative) 
+        over the spectrogram of a given song file.
+
+        Parameters
+        ----------
+        seg_data : avn.segmentation.SegData object
+            SegData object with valid `.seg_table` and `.song_folder_path` 
+            attributes.
+        segmenter : avn.segmentation.Segmenter daughter class object
+            The type of the segmenter (ie MFCC, RMSE, RMSEDerivative) determines
+            which segmentation criteria will be plotted
+        label : str
+            Label of segmentation criteria to be displayed in plot legend.
+        file_idx : int >=0, <total number of files segmented in `seg_data`, optional
+            The index of the single file within `seg_data` to be plotted. 
+            The default is 0.
+        figsize : tuple of floats, optional
+            Specifies the dimensions of the output plot. The default is (20, 5).
+        feature_range : tuple of floats, optional
+            Specifies the range of the y-axis so that the segmentation 
+            criteria can be rescaled to be easily visible over the spectrogram. 
+            The default is (100, 20000).
+
+        Returns
+        -------
+        None.
+
+        """
         #load a single file
         file_name = np.unique(seg_data.seg_table['files'])[file_idx]
         song = dataloading.SongFile(seg_data.song_folder_path + file_name)
@@ -1093,6 +1146,9 @@ class Plot():
         
 
 class Utils:
+    """
+    Contains syllable segmentation utilities
+    """
 
     def __init__():
         pass
