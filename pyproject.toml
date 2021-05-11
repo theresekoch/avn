@@ -19,6 +19,10 @@ scipy = "^1.6.3"
 librosa = "0.8.0"
 
 [tool.poetry.dev-dependencies]
+Sphinx = "^4.0.1"
+nbsphinx = "^0.8.4"
+ipykernel = "^5.5.4"
+sphinxcontrib-napoleon = "^0.7"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
