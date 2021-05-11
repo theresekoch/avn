@@ -14,9 +14,9 @@ import pandas as pd
 
 class SongFile:
     """
-    Data and metadata pertaining to a single audio file
+    Data and metadata pertaining to a single audio file.
     
-    ...
+    
     Attributes
     ----------
     data: ndarray

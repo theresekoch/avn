@@ -38,7 +38,8 @@
 
     
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="avn" href="modules.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -83,19 +84,30 @@
               
             
             
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">avn package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-avn.avn">avn.avn module</a></li>
-<li><a class="reference internal" href="#module-avn.dataloading">avn.dataloading module</a></li>
-<li><a class="reference internal" href="#module-avn.plotting">avn.plotting module</a></li>
-<li><a class="reference internal" href="#module-avn.segmentation">avn.segmentation module</a></li>
-<li><a class="reference internal" href="#module-avn">Module contents</a></li>
+              <p><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+</ul>
+<p><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dataloading.html">Data Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="segmentation.html">Segmentation</a></li>
+</ul>
+<p><span class="caption-text">testing</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">avn</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">avn package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-avn.dataloading">avn.dataloading module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-avn.plotting">avn.plotting module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-avn.segmentation">avn.segmentation module</a></li>
 </ul>
 </li>
 </ul>
-</div>
+</li>
+</ul>
+
             
           
         </div>
@@ -142,6 +154,8 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
+          <li><a href="modules.html">avn</a> &raquo;</li>
+        
       <li>avn package</li>
     
     
@@ -163,12 +177,6 @@
             
   <section id="avn-package">
 <h1>avn package<a class="headerlink" href="#avn-package" title="Permalink to this headline">¶</a></h1>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</section>
-<section id="module-avn.avn">
-<span id="avn-avn-module"></span><h2>avn.avn module<a class="headerlink" href="#module-avn.avn" title="Permalink to this headline">¶</a></h2>
-</section>
 <section id="module-avn.dataloading">
 <span id="avn-dataloading-module"></span><h2>avn.dataloading module<a class="headerlink" href="#module-avn.dataloading" title="Permalink to this headline">¶</a></h2>
 <p>Created on Wed Apr 28 09:05:15 2021</p>
@@ -177,17 +185,18 @@
 <dt id="avn.dataloading.SongFile">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">avn.dataloading.</span></code><code class="sig-name descname"><span class="pre">SongFile</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#avn.dataloading.SongFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Data and metadata pertaining to a single audio file</p>
-<p>…
-.. attribute:: data</p>
-<blockquote>
-<div><p>Contains audio data of wavfile.</p>
+<p>Data and metadata pertaining to a single audio file.</p>
+<dl class="py attribute">
+<dt id="avn.dataloading.SongFile.data">
+<code class="sig-name descname"><span class="pre">data</span></code><a class="headerlink" href="#avn.dataloading.SongFile.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains audio data of wavfile.</p>
 <dl class="field-list simple">
-<dt class="field-odd">type</dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
-</div></blockquote>
+</dd></dl>
+
 <dl class="py attribute">
 <dt id="avn.dataloading.SongFile.sample_rate">
 <code class="sig-name descname"><span class="pre">sample_rate</span></code><a class="headerlink" href="#avn.dataloading.SongFile.sample_rate" title="Permalink to this definition">¶</a></dt>
@@ -1267,9 +1276,6 @@ a smaller <cite>threshold_range</cite> with a finer <cite>threshold_step</cite>.
 </dd></dl>
 
 </section>
-<section id="module-avn">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-avn" title="Permalink to this headline">¶</a></h2>
-</section>
 </section>
 
 
@@ -1277,6 +1283,9 @@ a smaller <cite>threshold_range</cite> with a finer <cite>threshold_step</cite>.
            
           </div>
           <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="modules.html" class="btn btn-neutral float-left" title="avn" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
 
   <hr/>
 

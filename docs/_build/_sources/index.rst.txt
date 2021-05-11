@@ -5,12 +5,24 @@
 
 Welcome to avn's documentation!
 ===============================
+`avn` is a python package for zebra finch song analysis. It currently provides
+functions necessary for threshold-based syllable segmentation. For more information, 
+please contact `Therese Koch <mailto:therese.koch@utsouthwestern.edu>`_ or consult 
+the `github repository <https://github.com/theresekoch/avn>`_
+
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :caption: Getting Started
+   :maxdepth: 1
 
+   installation
+   tutorial
 
+.. toctree::
+   :caption: Documentation
+   :maxdepth: 3
+
+   modules
 
 Indices and tables
 ==================

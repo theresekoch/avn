@@ -1,7 +1,26 @@
-Py_code
-=======
+avn
+===
 
-.. toctree::
-   :maxdepth: 4
+avn.dataloading module
+----------------------
 
-   avn_segmentation_example
+.. automodule:: avn.dataloading
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+avn.plotting module
+-------------------
+
+.. automodule:: avn.plotting
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+avn.segmentation module
+-----------------------
+
+.. automodule:: avn.segmentation
+   :members:
+   :undoc-members:
+   :show-inheritance:
