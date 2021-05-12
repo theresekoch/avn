@@ -33,14 +33,13 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Segmentation" href="segmentation.html" />
-    <link rel="prev" title="Data Loading" href="dataloading.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -88,18 +87,9 @@
               <p><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">AVN Getting Started Tutorial</a></li>
 </ul>
 <p><span class="caption-text">Documentation</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="dataloading.html">Data Loading</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Plotting</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#avn-plotting-module">avn.plotting module</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="segmentation.html">Segmentation</a></li>
-</ul>
-<p><span class="caption-text">testing</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">avn</a></li>
 </ul>
@@ -169,11 +159,78 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <section id="plotting">
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="plotting">
 <h1>Plotting<a class="headerlink" href="#plotting" title="Permalink to this headline">¶</a></h1>
 <p>This module contains functions for generating and plotting spectrograms.</p>
-<section id="avn-plotting-module">
-<h2>avn.plotting module<a class="headerlink" href="#avn-plotting-module" title="Permalink to this headline">¶</a></h2>
+<section id="module-avn.plotting">
+<span id="avn-plotting-module"></span><h2>avn.plotting module<a class="headerlink" href="#module-avn.plotting" title="Permalink to this headline">¶</a></h2>
+<p>Created on Tue May  4 13:39:10 2021</p>
+<p>&#64;author: Therese</p>
+<dl class="py function">
+<dt id="avn.plotting.make_spectrogram">
+<code class="sig-prename descclassname"><span class="pre">avn.plotting.</span></code><code class="sig-name descname"><span class="pre">make_spectrogram</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">song</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#avn.plotting.make_spectrogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates spectrogram information for plotting</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>song</strong> (<em>avn.dataloading.SongFile object</em>) – SongFile object corresponding to the file to be plotted</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>spectrogram_db</strong> – Array containing spectrogram data for plotting.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy ndarray, 2D</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="avn.plotting.plot_spectrogram">
+<code class="sig-prename descclassname"><span class="pre">avn.plotting.</span></code><code class="sig-name descname"><span class="pre">plot_spectrogram</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spectrogram</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(20,</span> <span class="pre">5)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#avn.plotting.plot_spectrogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots a spectrogram of a song.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spectrogram</strong> (<em>numpy ndarray</em><em>, </em><em>2D</em>) – Array containing spectrogram data.</p></li>
+<li><p><strong>sample_rate</strong> (<em>int</em>) – Sample rate of audio. Necessary to determine time along the x-axis.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlob.axes._subplots.AxesSubplot object</em>) – Axis object must be specified if you want to plot the spectrogram as a
+subplot within a matplotlib.pyplot figure with other subplots as well.
+If plotting a spectrogram alone, ax doesn’t need to be specified.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple of floats</em><em>, </em><em>optional</em>) – Specifies the dimensions of the output plot. The default is (20, 5).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -182,10 +239,6 @@
            
           </div>
           <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="segmentation.html" class="btn btn-neutral float-right" title="Segmentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="dataloading.html" class="btn btn-neutral float-left" title="Data Loading" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-    </div>
 
   <hr/>
 

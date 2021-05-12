@@ -7,6 +7,7 @@ avn.dataloading module
 -----------------------
 
 .. automodule:: avn.dataloading
+   :noindex:
    :members:
    :undoc-members:
    :show-inheritance:

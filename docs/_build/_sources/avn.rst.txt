@@ -1,6 +1,17 @@
 avn package
 ===========
 
+Submodules
+----------
+
+avn.avn module
+--------------
+
+.. automodule:: avn.avn
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 avn.dataloading module
 ----------------------
 
@@ -25,4 +36,10 @@ avn.segmentation module
    :undoc-members:
    :show-inheritance:
 
+Module contents
+---------------
 
+.. automodule:: avn
+   :members:
+   :undoc-members:
+   :show-inheritance:

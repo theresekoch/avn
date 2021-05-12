@@ -19,6 +19,12 @@ the `github repository <https://github.com/theresekoch/avn>`_
    tutorial
 
 .. toctree::
+   :caption: Tutorials
+   :maxdepth: 2
+
+   tutorial
+
+.. toctree::
    :caption: Documentation
    :maxdepth: 3
 

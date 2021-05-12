@@ -6,10 +6,10 @@ Created on Wed May  5 08:29:00 2021
 """
 
 import glob
-#import avn.dataloading as dataloading
-#import avn.plotting as plotting
-import dataloading
-import plotting
+import avn.dataloading as dataloading
+import avn.plotting as plotting
+#import dataloading
+#import plotting
 import numpy as np
 import pandas as pd
 import librosa
@@ -1140,7 +1140,7 @@ class Plot():
                                         hop_length = 512, n_fft = 2048)
         ax2.plot(x_axis, seg_criteria, color = 'white', label = label)
         ax2.set_ylabel("Segmentation Criteria")
-        ax2.legend()
+        ax2.legend();
 
         
         
@@ -1405,7 +1405,8 @@ class Utils:
         Plots `files_per_bird` number of random example song spectrograms 
         with automatically generated segmentations (and optionally ground truth
         segmentations) overlaid for each bird in Bird_IDs. 
-        
+
+
         Parameters
         ----------
         segmenter : avn.segmentation.Segmenter child class type
@@ -1447,7 +1448,7 @@ class Utils:
         seg_attribute : {'onsets', 'offsets'}, optional
             Specifies whether syllable onset times or offset times should be 
             displayed. The default is 'onsets'.
-       truth_table_suffix : str, optional
+        truth_table_suffix : str, optional
             This function requires that the truth table data be located in a 
             .csv file within folder_path\Bird_ID\ and begin with the Bird_ID
             followed by some descriptor. This is used to specify that final 

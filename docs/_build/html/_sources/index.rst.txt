@@ -20,19 +20,12 @@ the `github repository <https://github.com/theresekoch/avn>`_
 
 .. toctree::
    :caption: Documentation
-   :maxdepth: 1
+   :maxdepth: 3
 
-   dataloading
-   plotting
-   segmentation
+   modules
 
 Indices and tables
 ==================
-
-.. toctree::
-   :caption: testing
-
-   modules
 
 * :ref:`genindex`
 * :ref:`modindex`
