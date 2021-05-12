@@ -1,1 +1,9 @@
 __pycache__/
+
+docs/_build/
+
+*/.ipynb_checkpoints/
+
+docs/_static/
+
+docs/_templates
