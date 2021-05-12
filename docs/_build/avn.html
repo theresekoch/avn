@@ -98,12 +98,9 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">avn</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">avn package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-avn.avn">avn.avn module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-avn.dataloading">avn.dataloading module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-avn.plotting">avn.plotting module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-avn.segmentation">avn.segmentation module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-avn">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -203,12 +200,6 @@
 </style>
 <section id="avn-package">
 <h1>avn package<a class="headerlink" href="#avn-package" title="Permalink to this headline">¶</a></h1>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</section>
-<section id="module-avn.avn">
-<span id="avn-avn-module"></span><h2>avn.avn module<a class="headerlink" href="#module-avn.avn" title="Permalink to this headline">¶</a></h2>
-</section>
 <section id="module-avn.dataloading">
 <span id="avn-dataloading-module"></span><h2>avn.dataloading module<a class="headerlink" href="#module-avn.dataloading" title="Permalink to this headline">¶</a></h2>
 <p>Created on Wed Apr 28 09:05:15 2021</p>
@@ -516,120 +507,6 @@ the value of each metric.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>avn.segmentation.SegData instance</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="avn.segmentation.Metrics.calc_F1_components_per_file">
-<code class="sig-name descname"><span class="pre">calc_F1_components_per_file</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">truth_current_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seg_matches</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">truth_matches</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_gap</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#avn.segmentation.Metrics.calc_F1_components_per_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the number of true positive, false positive and false
-negative syllable onsets in <cite>seg_current_file</cite> within <cite>max_gap</cite> off a
-syllable onset in <cite>truth_current_file</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>seg_current_file</strong> (<em>pandas DataFrame</em>) – Dataframe with the columns <cite>onsets</cite> <cite>offsets</cite> and <cite>files</cite>,
-containing the onset and offset times in seconds of every syllable
-in a single .wav file, generated through automated syllable
-segmentation</p></li>
-<li><p><strong>truth_current_file</strong> (<em>pandas DataFrame</em>) – Dataframe with the columns <cite>onsets</cite>, <cite>offsets</cite>, <cite>labels</cite> and <cite>files</cite>
-containing the ground truth onset and offset times in seconds of
-every syllable in the same .wav file that was segmented in
-<cite>seg_current_file</cite>. <cite>labels</cite> can be either ‘s’ for syllable or ‘n’
-for noise, where segmentation matches to noise are ignored when
-calculating the F1 components.</p></li>
-<li><p><strong>seg_matches</strong> (<em>numpy ndarray</em><em>, </em><em>1D</em>) – For every syllable onset in <cite>seg_current_file</cite>, this array contains
-the index of the best unique onset match in <cite>truth_current_file</cite>.
-Generated with <cite>avn.segmentation.Metrics.get_best_matches()</cite>.</p></li>
-<li><p><strong>truth_matches</strong> (<em>numpy ndarray</em><em>, </em><em>1D</em>) – For every syllable onset in <cite>truth_current_file</cite>, this array
-contains the index of the best unique onset match in
-<cite>seg_current_file</cite>. Generated with
-<cite>avn.segmentation.Metrics.get_best_mtches()</cite>.</p></li>
-<li><p><strong>max_gap</strong> (<em>float &gt; 0</em>) – The maximum allowable gap in seconds between onsets where they will
-still be considered a match</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>true_positives</strong> (<em>int</em>) – The total number of true positive syllable onsets. ie the number of
-syllable onsets in <cite>seg_current_file</cite> which uniquely fall within
-<cite>max_gap</cite> seconds of a true syllable onset in <cite>truth_current_file</cite>.</p></li>
-<li><p><strong>false_positives</strong> (<em>int</em>) – The total number of false positive syllable onsets. ie the number
-of syllable onsets in <cite>seg_current_file</cite> which do not uniquely
-fall within <cite>max_gap</cite> seconds of a true syllable onset in
-<cite>truth_current_file</cite>.</p></li>
-<li><p><strong>false_negatives</strong> (<em>int</em>) – the total number of false negative syllable onsets. ie the number
-of true syllable onsets in <cite>truth_current_file</cite> which do not
-uniquely fall within <cite>max_gap</cite> seconds of a syllable onset in
-<cite>seg_current_file</cite>.</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>No syllable onsets in <cite>seg_current_file</cite> which occur either before
-the first true syllable or after the last true syllable in <cite>true_seg_table</cite>
-will be considered when calculating the F1 components. Additionally,
-if <cite>true_seg_table</cite> contains noise in the middle of the song file
-(ie a syllable labeled ‘n’), no syllable onsets in <cite>seg_current_file</cite>
-which fall after the last stllable onset before noise and before the
-first syllable onset after noise in <cite>true_seg_table</cite> will be considered.
-This is meant to reduce the impact of matches or mismatches of cage
-noise on the ultimate F1 score.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="avn.segmentation.Metrics.correct_duplicates">
-<code class="sig-name descname"><span class="pre">correct_duplicates</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delta_t_grid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#avn.segmentation.Metrics.correct_duplicates" title="Permalink to this definition">¶</a></dt>
-<dd><p>Removes duplicate matches from a set of best timestamp matches by
-setting all but the single best match to an index to the second best match</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>best_matches</strong> (<em>numpy ndarray</em><em>, </em><em>1D</em>) – Contains the index of the best match in one set of timestamps to
-each timestamp in another set of timestamps. Generated by
-<cite>avn.segmentation.Metrics.get_best_matches()</cite>.</p></li>
-<li><p><strong>delta_t_grid</strong> (<em>numpy ndarray</em><em>, </em><em>2D</em>) – Array containing the absolute value of the time difference between
-all possible pairs of timestamps in two sets being compared.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>best_matches</strong> (<em>numpy ndarray, 1D</em>) – Same as input <cite>best_matches</cite>, but with duplicate matches corrected.</p></li>
-<li><p><strong>delta_t_grid</strong> (<em>numpy nd array, 2D</em>) – Same as input <cite>delta_t_grid</cite> but with values at duplicated positions
-set to np.inf so that second best match can be identified.</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="avn.segmentation.Metrics.get_best_matches">
-<code class="sig-name descname"><span class="pre">get_best_matches</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">second_onsets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_gap</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#avn.segmentation.Metrics.get_best_matches" title="Permalink to this definition">¶</a></dt>
-<dd><p>Finds the best unique matches between timestamps in two sets. These
-timestamps can reflect syllable onsets or offsets generates differently.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>first_onsets</strong> (<em>pandas Series</em>) – Contains the timestamps in seconds of syllable onsets calculated
-with a particular method.</p></li>
-<li><p><strong>second_onsets</strong> (<em>pandas Series</em>) – Contains the timestamps in seconds of syllable onsets calculated
-with a different method.</p></li>
-<li><p><strong>max_gap</strong> (<em>float &gt; 0</em>) – The maximum allowable gap in seconds between onsets in the
-<cite>first_onsets</cite> and <cite>second_onsets</cite> series where they will still be
-considered a match.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>best_matches</strong> – For every syllable onset in <cite>first_onsets</cite> this 1 dimensional
-numpy array contains the index of the best unique match in
-<cite>second_onsets</cite>. If there is no unique match within the allowable
-<cite>max_gap</cite>, the value at that index is <cite>NaN</cite>.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>numpy ndarray, 1D</p>
 </dd>
 </dl>
 </dd></dl>
@@ -953,79 +830,7 @@ segmentation criteria (e.g RMSE, RMSEDerivative, MFCC, MFCCDerivative)</p>
 
 <dl class="py method">
 <dt id="id3">
-<code class="sig-name descname"><span class="pre">get_syll_onsets_offsets</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seg_criteria</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper_thresh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower_thresh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_file_duration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_syll_duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns onsets and offset timestamps of all syllables in a file based
-on seg_criteria threshold crossings.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>seg_criteria</strong> (<em>numpy ndarray</em><em>, </em><em>1D</em>) – 1 dimensional numpy array containing the segmentation criteria
-values for a wave file for threshold segmentation</p></li>
-<li><p><strong>upper_thresh</strong> (<em>numpy ndarray</em><em>, </em><em>1D</em>) – 1 dimensional numpy array with the same dimensions as <cite>seg_criteria</cite>.
-Contains the value of the upper threshold for detecting syllable
-onsets.</p></li>
-<li><p><strong>lower_thresh</strong> (<em>numpy ndarray</em><em>, </em><em>1D</em>) – 1 dimensional numpy array with the same dimensions as <cite>seg_criteria</cite>.
-Contains the value of the lower threshold for detecting syllable
-offsets.</p></li>
-<li><p><strong>total_file_duration</strong> (<em>float &gt; 0</em>) – Total duration of the song file in seconds.</p></li>
-<li><p><strong>max_syll_duration</strong> (<em>float &gt; 0</em><em>, </em><em>optional</em>) – Maximum allowable syllable duration in seconds. The default is 0.33.
-If the gap between consecutive syllabel onsets is longer than this
-value, the offset will be determined by lower threshold crossing.
-If the lower threshold crossing still results in a syllable longer
-than this value, the syllable offset will be set to the onset
-timestamp + <cite>max_syll_duration</cite>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>syll_onsets</strong> (<em>numpy ndarray, 1D</em>) – 1 dimensional numpy array containing the indices of all syllable
-onsets in <cite>seg_criteria</cite>.</p></li>
-<li><p><strong>syll_offsets</strong> (<em>numpy ndarray, 1D</em>) – 1 dimensional numpy array containing the indices of all syllable
-offsets in <cite>seg_criteria</cite>.</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>This segmentation works by first finding every point where the
-segmentation criteria (e.g. RMSE, MFCC Derivative etc.) crosses the
-upper threshold. Those are all considered syllable onsets.
-The onset of the following syllable will be used as the offset of the
-previous syllable, so long as that doesn’t result in a syllable with
-a duration longer than <cite>max_syll_duration</cite>. If the syllable is longer,
-then the offset is determined by finding the first point after the
-onset where the segmentation criteria crosses the lower threshold. If
-that still results in a syllable which is longer than <cite>max_syll_duration</cite>
-then the offset defaults to <cite>max_syll_duration</cite> seconds after the
-syllable onset.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="avn.segmentation.Segmenter.get_threshold">
-<code class="sig-name descname"><span class="pre">get_threshold</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seg_criteria</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thresh</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#avn.segmentation.Segmenter.get_threshold" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates a flat threshold vetor for comparison to seg_criteria for
-threshold based segmentation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>seg_criteria</strong> (<em>numpy ndarray</em><em>, </em><em>1D</em>) – 1 dimensional numpy array containing the segmentation criteria
-values for a wave file for treshold segmentation.</p></li>
-<li><p><strong>thresh</strong> (<em>float</em>) – Value of threshold to be created.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>threshold_vector</strong> – 1 dimensional numpy array with the same dimensions as <cite>seg_criteria</cite>,
-where every entry has the value <cite>thresh</cite>.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>numpy ndarray, 1D</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="id4">
-<code class="sig-name descname"><span class="pre">make_segmentation_table</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Bird_ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">song_folder_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper_threshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower_threshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_syll_duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.33</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id4" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">make_segmentation_table</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Bird_ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">song_folder_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper_threshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower_threshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_syll_duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.33</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1058,8 +863,8 @@ of every syllable, and the syllable’s corresponding file.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id5">
-<code class="sig-name descname"><span class="pre">rescale</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seg_criteria</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id5" title="Permalink to this definition">¶</a></dt>
+<dt id="id4">
+<code class="sig-name descname"><span class="pre">rescale</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seg_criteria</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id4" title="Permalink to this definition">¶</a></dt>
 <dd><p>Applies 0 to 1 min-max rescaling to a vector.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1297,9 +1102,6 @@ a smaller <cite>threshold_range</cite> with a finer <cite>threshold_step</cite>.
 
 </dd></dl>
 
-</section>
-<section id="module-avn">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-avn" title="Permalink to this headline">¶</a></h2>
 </section>
 </section>
 

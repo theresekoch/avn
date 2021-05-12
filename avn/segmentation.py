@@ -194,11 +194,11 @@ class Segmenter:
             seg_criteria = self.get_seg_criteria(song)
         
             #Create thresholds 
-            upper_thresh = self.get_threshold(seg_criteria, thresh = upper_threshold)
-            lower_thresh = self.get_threshold(seg_criteria, thresh = lower_threshold)
+            upper_thresh = self.__get_threshold(seg_criteria, thresh = upper_threshold)
+            lower_thresh = self.__get_threshold(seg_criteria, thresh = lower_threshold)
         
             #Get syllable onset and offset indices
-            syll_onset_indices, syll_offset_indices = self.get_syll_onsets_offsets(seg_criteria, 
+            syll_onset_indices, syll_offset_indices = self.__get_syll_onsets_offsets(seg_criteria, 
                                                                               upper_thresh, 
                                                                               lower_thresh, 
                                                                               song.duration,
@@ -251,7 +251,7 @@ class Segmenter:
         
         return seg_criteria
         
-    def get_threshold(self, seg_criteria, thresh):
+    def __get_threshold(self, seg_criteria, thresh):
         """
         Generates a flat threshold vetor for comparison to seg_criteria for 
         threshold based segmentation. 
@@ -275,7 +275,7 @@ class Segmenter:
     
         return threshold_vector
   
-    def get_syll_onsets_offsets(self, seg_criteria, upper_thresh, lower_thresh, total_file_duration, 
+    def __get_syll_onsets_offsets(self, seg_criteria, upper_thresh, lower_thresh, total_file_duration, 
                             max_syll_duration = 0.3):
         """
         Returns onsets and offset timestamps of all syllables in a file based 
@@ -709,14 +709,14 @@ class Metrics():
             truth_current_file = truth_seg_table[truth_seg_table['files'] == current_file]
             
             #get best matches of truth to segmenter onsets
-            seg_matches = Metrics.get_best_matches(seg_current_file['onsets'], 
+            seg_matches = Metrics.__get_best_matches(seg_current_file['onsets'], 
                                                 truth_current_file['onsets'], max_gap)
             #get best matches of segmenter to truth onsets
-            truth_matches = Metrics.get_best_matches(truth_current_file['onsets'], 
+            truth_matches = Metrics.__get_best_matches(truth_current_file['onsets'], 
                                              seg_current_file['onsets'], max_gap)
             
             #calculate F1 components for the given file
-            true_positives, false_positives, false_negatives = Metrics.calc_F1_components_per_file(seg_current_file, 
+            true_positives, false_positives, false_negatives = Metrics.__calc_F1_components_per_file(seg_current_file, 
                                                                                            truth_current_file, 
                                                                                            seg_matches, 
                                                                                            truth_matches, 
@@ -743,7 +743,7 @@ class Metrics():
         
             
         
-    def get_best_matches(first_onsets, second_onsets, max_gap):
+    def __get_best_matches(first_onsets, second_onsets, max_gap):
         """
         Finds the best unique matches between timestamps in two sets. These 
         timestamps can reflect syllable onsets or offsets generates differently.
@@ -800,12 +800,12 @@ class Metrics():
         best_matches_previous = best_matches.copy()   
         
         #Deal with duplicate values by setting the second best matches to their second best pairs
-        best_matches, delta_t_grid = Metrics.correct_duplicates(best_matches, delta_t_grid)
+        best_matches, delta_t_grid = Metrics.__correct_duplicates(best_matches, delta_t_grid)
         
         #check if there were changes made by checking for duplicates. If so, repeat duplicate check. 
         ##should this not be a while loop? as in you would want to keep checking if new duplicates arose as a result of checking for duplicates until there are none?
         if not np.allclose(best_matches, best_matches_previous):
-            best_matches, delta_t_grid = Metrics.correct_duplicates(best_matches, delta_t_grid)
+            best_matches, delta_t_grid = Metrics.__correct_duplicates(best_matches, delta_t_grid)
         
         #make sure duplicate corrections didn't result in out of order matches. 
             #if they do, set the later match to np.NaN
@@ -817,7 +817,7 @@ class Metrics():
         return best_matches
     
     
-    def correct_duplicates(best_matches, delta_t_grid):   
+    def __correct_duplicates(best_matches, delta_t_grid):   
         """
         Removes duplicate matches from a set of best timestamp matches by 
         setting all but the single best match to an index to the second best match
@@ -827,7 +827,7 @@ class Metrics():
         best_matches : numpy ndarray, 1D
             Contains the index of the best match in one set of timestamps to 
             each timestamp in another set of timestamps. Generated by 
-            `avn.segmentation.Metrics.get_best_matches()`.
+            `avn.segmentation.Metrics.__get_best_matches()`.
         delta_t_grid : numpy ndarray, 2D
             Array containing the absolute value of the time difference between 
             all possible pairs of timestamps in two sets being compared. 
@@ -867,7 +867,7 @@ class Metrics():
         return (best_matches, delta_t_grid)
         
     
-    def calc_F1_components_per_file(seg_current_file, 
+    def __calc_F1_components_per_file(seg_current_file, 
                                     truth_current_file, 
                                     seg_matches, 
                                     truth_matches, max_gap):
@@ -894,7 +894,7 @@ class Metrics():
         seg_matches : numpy ndarray, 1D
             For every syllable onset in `seg_current_file`, this array contains
             the index of the best unique onset match in `truth_current_file`. 
-            Generated with `avn.segmentation.Metrics.get_best_matches()`.
+            Generated with `avn.segmentation.Metrics.__get_best_matches()`.
         truth_matches : numpy ndarray, 1D
             For every syllable onset in `truth_current_file`, this array 
             contains the index of the best unique onset match in 
