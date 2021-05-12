@@ -6,10 +6,10 @@ Created on Wed May  5 08:29:00 2021
 """
 
 import glob
-import avn.dataloading as dataloading
-import avn.plotting as plotting
-#import dataloading
-#import plotting
+#import avn.dataloading as dataloading
+#import avn.plotting as plotting
+import dataloading
+import plotting
 import numpy as np
 import pandas as pd
 import librosa
@@ -1091,8 +1091,7 @@ class Plot():
         plt.show()
         
     
-    def plot_seg_criteria(seg_data, segmenter, label, file_idx = 0, figsize = (20, 5),
-                          feature_range = (100, 20000)):
+    def plot_seg_criteria(seg_data, segmenter, label, file_idx = 0, figsize = (20, 5)):
         """
         Plots a given segmentation criteria (ie MFCC, RMSE, RMSE Derivative) 
         over the spectrogram of a given song file.
@@ -1112,10 +1111,6 @@ class Plot():
             The default is 0.
         figsize : tuple of floats, optional
             Specifies the dimensions of the output plot. The default is (20, 5).
-        feature_range : tuple of floats, optional
-            Specifies the range of the y-axis so that the segmentation 
-            criteria can be rescaled to be easily visible over the spectrogram. 
-            The default is (100, 20000).
 
         Returns
         -------
@@ -1131,16 +1126,22 @@ class Plot():
         
         #calculate segmentation criteria
         seg_criteria = segmenter.get_seg_criteria(song)
-        #rescale segmentation criteria, so that it is visible over spectrogram
-        seg_criteria_scaled = sklearn.preprocessing.minmax_scale(seg_criteria, feature_range = feature_range)
         
+        #create figure and axes
+        fig, ax = plt.subplots(figsize = figsize)
         #plot spectrogram
-        plotting.plot_spectrogram(spectrogram, song.sample_rate)
+        plotting.plot_spectrogram(spectrogram, song.sample_rate, ax)
         
+        #create second axes for plotting seg_criteria
+        ax2 = ax.twinx()
+        
+        #plot seg_criteria
         x_axis = librosa.frames_to_time(np.arange(len(seg_criteria)), sr = song.sample_rate, 
                                         hop_length = 512, n_fft = 2048)
-        plt.plot(x_axis, seg_criteria_scaled, color = 'white', label = label)
-        plt.legend()
+        ax2.plot(x_axis, seg_criteria, color = 'white', label = label)
+        ax2.set_ylabel("Segmentation Criteria")
+        ax2.legend()
+
         
         
         

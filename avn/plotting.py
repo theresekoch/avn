@@ -30,7 +30,7 @@ def make_spectrogram(song):
     spectrogram_db = librosa.amplitude_to_db(np.abs(spectrogram))
     return spectrogram_db
 
-def plot_spectrogram(spectrogram, sample_rate, figsize = (20, 5)):
+def plot_spectrogram(spectrogram, sample_rate, ax = None, figsize = (20, 5)):
     """
     Plots a spectrogram of a song. 
 
@@ -40,6 +40,10 @@ def plot_spectrogram(spectrogram, sample_rate, figsize = (20, 5)):
         Array containing spectrogram data. 
     sample_rate : int
         Sample rate of audio. Necessary to determine time along the x-axis. 
+    ax: matplotlob.axes._subplots.AxesSubplot object
+        Axis object must be specified if you want to plot the spectrogram as a 
+        subplot within a matplotlib.pyplot figure with other subplots as well. 
+        If plotting a spectrogram alone, ax doesn't need to be specified.
     figsize : tuple of floats, optional
         Specifies the dimensions of the output plot. The default is (20, 5).
 
@@ -51,9 +55,11 @@ def plot_spectrogram(spectrogram, sample_rate, figsize = (20, 5)):
     #Create plot with given dimensions
     plt.figure(figsize = figsize, facecolor = 'white')
     #plot spectrogram
-    librosa.display.specshow(spectrogram, sr = sample_rate, 
+    img = librosa.display.specshow(spectrogram, sr = sample_rate, 
                              hop_length = 512 / 4, 
                              x_axis = 'time', 
                              y_axis = 'hz', 
-                             cmap = 'viridis')
+                             cmap = 'viridis', 
+                             ax = ax)
+    
     
