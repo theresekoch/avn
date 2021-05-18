@@ -3,3 +3,4 @@
 sphinx==3.5.3
 sphinx_rtd_theme==0.5.2
 nbsphinx==0.8.4
+sphinx-autoapi==1.8.1
