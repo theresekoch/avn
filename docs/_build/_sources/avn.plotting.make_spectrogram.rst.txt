@@ -1,0 +1,6 @@
+avn.plotting.make\_spectrogram
+==============================
+
+.. currentmodule:: avn.plotting
+
+.. autofunction:: make_spectrogram

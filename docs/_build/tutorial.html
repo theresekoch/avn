@@ -1,0 +1,1284 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>AVN Getting Started Tutorial &mdash; avn 0.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="avn" href="modules.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> avn
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p><span class="caption-text">Getting Started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">AVN Getting Started Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Simple-Segmentation">Simple Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Selecting-a-Threshold">Selecting a Threshold</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Automatic-Threshold-Optimization">Automatic Threshold Optimization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Manual-Threshold-Selection">Manual Threshold Selection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#Calculating-Segmentation-Metrics">Calculating Segmentation Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Segmenting-Many-Birds-at-Once">Segmenting Many Birds at Once</a></li>
+</ul>
+</li>
+</ul>
+<p><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">AVN Getting Started Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Simple-Segmentation">Simple Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Selecting-a-Threshold">Selecting a Threshold</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Automatic-Threshold-Optimization">Automatic Threshold Optimization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Manual-Threshold-Selection">Manual Threshold Selection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#Calculating-Segmentation-Metrics">Calculating Segmentation Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Segmenting-Many-Birds-at-Once">Segmenting Many Birds at Once</a></li>
+</ul>
+</li>
+</ul>
+<p><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">avn</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">avn</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>AVN Getting Started Tutorial</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/tutorial.ipynb.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="AVN-Getting-Started-Tutorial">
+<h1>AVN Getting Started Tutorial<a class="headerlink" href="#AVN-Getting-Started-Tutorial" title="Permalink to this headline">¶</a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">avn.dataloading</span>
+<span class="kn">import</span> <span class="nn">avn.segmentation</span>
+</pre></div>
+</div>
+</div>
+<section id="Simple-Segmentation">
+<h2>Simple Segmentation<a class="headerlink" href="#Simple-Segmentation" title="Permalink to this headline">¶</a></h2>
+<p>In this section of the tutorial, I will be segmenting 50 song files from a single bird using MFCC derivative threshold segmentation. First, let’s specify the path to the folder containing the song files:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">Bird_ID</span> <span class="o">=</span> <span class="s2">&quot;G402&quot;</span>
+<span class="n">song_folder</span> <span class="o">=</span> <span class="s2">&quot;../sample_data/&quot;</span> <span class="o">+</span> <span class="n">Bird_ID</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
+</pre></div>
+</div>
+</div>
+<p>Now, we will instantiate an MFCCDerivative class object, which we will then use for segmentation. Segmentation using other criteria will differ in terms of which segmenter is used. Currently the options available are RMSE, RMSEDerivative, MFCC and MFCCDerivative.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">segmenter</span> <span class="o">=</span> <span class="n">avn</span><span class="o">.</span><span class="n">segmentation</span><span class="o">.</span><span class="n">MFCCDerivative</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>Now that we’ve created the segmenter, we can use it to segment the songs in <code class="docutils literal notranslate"><span class="pre">song_folder</span></code>. We must also specify the value of the upper and lower segmentation thresholds.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">seg_data</span> <span class="o">=</span> <span class="n">segmenter</span><span class="o">.</span><span class="n">make_segmentation_table</span><span class="p">(</span><span class="n">Bird_ID</span><span class="p">,</span> <span class="n">song_folder</span><span class="p">,</span>
+                                            <span class="n">upper_threshold</span> <span class="o">=</span> <span class="mf">0.10</span><span class="p">,</span>
+                                            <span class="n">lower_threshold</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">seg_data</span></code> is an instance of the avn.segmentation.SegData class. It’s <code class="docutils literal notranslate"><span class="pre">.seg_table</span></code> attribute contains a dataframe with the onset and offset times of every syllable, generated by <code class="docutils literal notranslate"><span class="pre">segmenter</span></code>:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">seg_data</span><span class="o">.</span><span class="n">seg_table</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>onsets</th>
+      <th>offsets</th>
+      <th>files</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.359909</td>
+      <td>0.522449</td>
+      <td>G402_43362.23322048_9_19_6_28_42.wav</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.522449</td>
+      <td>0.766259</td>
+      <td>G402_43362.23322048_9_19_6_28_42.wav</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.766259</td>
+      <td>0.882358</td>
+      <td>G402_43362.23322048_9_19_6_28_42.wav</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.882358</td>
+      <td>1.021678</td>
+      <td>G402_43362.23322048_9_19_6_28_42.wav</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>1.021678</td>
+      <td>1.160998</td>
+      <td>G402_43362.23322048_9_19_6_28_42.wav</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>These syllable onset and offset timestamps can be used to extract individual syllables from files for further analyses, like syllable labeling or calculating acoustic features. To save this table locally for future use you can use the following function:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">out_file_dir</span> <span class="o">=</span> <span class="s2">&quot;../sample_data/&quot;</span>
+<span class="n">seg_data</span><span class="o">.</span><span class="n">save_as_csv</span><span class="p">(</span><span class="n">out_file_dir</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>This will create a file called <code class="docutils literal notranslate"><span class="pre">[Bird_ID]_seg_table.csv</span></code>. In our case, that is “G402_seg_table.csv”</p>
+</section>
+<section id="Selecting-a-Threshold">
+<h2>Selecting a Threshold<a class="headerlink" href="#Selecting-a-Threshold" title="Permalink to this headline">¶</a></h2>
+<p>In the example above, we used an upper_threshold value of 0.1. This threshold generally works well for MFCC derivative segmentation across all zebra finches, in my experience, but you may want to test other thresholds to see how they compare.</p>
+<section id="Automatic-Threshold-Optimization">
+<h3>Automatic Threshold Optimization<a class="headerlink" href="#Automatic-Threshold-Optimization" title="Permalink to this headline">¶</a></h3>
+<p>If you have ground truth segmentation data generated in evsonganaly and exported to a .csv file using <code class="docutils literal notranslate"><span class="pre">generate_syll_table_TK()</span></code> in MATLAB, then you can use avn’s in-build threshold optimization functions. You must specify a range of threshold values to test and the step between thresholds, and the function will return the threshold from that set which yields the highest F1 score:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ground_truth_data_path</span> <span class="o">=</span> <span class="s2">&quot;../sample_data/&quot;</span> <span class="o">+</span> <span class="n">Bird_ID</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">Bird_ID</span> <span class="o">+</span> <span class="s2">&quot;_syll_table.csv&quot;</span>
+
+<span class="n">optimal_threshold</span><span class="p">,</span> <span class="n">peak_F1</span><span class="p">,</span> <span class="n">segmentation_scores</span> <span class="o">=</span> <span class="n">avn</span><span class="o">.</span><span class="n">segmentation</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">threshold_optimization</span><span class="p">(</span><span class="n">segmenter</span><span class="p">,</span> <span class="n">Bird_ID</span><span class="p">,</span>
+                                                                                               <span class="n">song_folder</span><span class="p">,</span>
+                                                                                               <span class="n">ground_truth_data_path</span><span class="p">,</span>
+                                                                                               <span class="n">threshold_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.08</span><span class="p">,</span> <span class="mf">0.13</span><span class="p">),</span>
+                                                                                               <span class="n">threshold_step</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
+                                                                                               <span class="n">lower_threshold</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The optimal threshold is: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">optimal_threshold</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The F1 score at the optimal threshold is: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">peak_F1</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+The optimal threshold is: 0.11999999999999998
+The F1 score at the optimal threshold is: 0.9711078777800873
+</pre></div></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">segmentation_scores</span></code> contains all the segmentation accuracy metrics calculated at each threshold tested:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">segmentation_scores</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>F1</th>
+      <th>precision</th>
+      <th>recall</th>
+      <th>upper_threshold</th>
+      <th>lower_threshold</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.918155</td>
+      <td>0.853961</td>
+      <td>0.992784</td>
+      <td>0.08</td>
+      <td>-0.01</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>0.937287</td>
+      <td>0.887666</td>
+      <td>0.992784</td>
+      <td>0.09</td>
+      <td>-0.01</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>0.949675</td>
+      <td>0.911570</td>
+      <td>0.991105</td>
+      <td>0.10</td>
+      <td>-0.01</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>0.961380</td>
+      <td>0.934132</td>
+      <td>0.990267</td>
+      <td>0.11</td>
+      <td>-0.01</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>0.971108</td>
+      <td>0.954248</td>
+      <td>0.988574</td>
+      <td>0.12</td>
+      <td>-0.01</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+<section id="Manual-Threshold-Selection">
+<h3>Manual Threshold Selection<a class="headerlink" href="#Manual-Threshold-Selection" title="Permalink to this headline">¶</a></h3>
+<p>If you do not have ‘ground truth’ segmentation data (which is necessary to calculate F1 scores, and thus to perform automatic threshold optimization), you can use AVN’s plotting functions to estimate the best threshold and look at the resulting segmentations.</p>
+<p>First, plot the MFCC Derivative of an example file over it’s spectrogram:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">avn</span><span class="o">.</span><span class="n">segmentation</span><span class="o">.</span><span class="n">Plot</span><span class="o">.</span><span class="n">plot_seg_criteria</span><span class="p">(</span><span class="n">seg_data</span><span class="p">,</span> <span class="n">segmenter</span><span class="p">,</span> <span class="s2">&quot;MFCC Derivative&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/tutorial_23_0.png" src="_images/tutorial_23_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;Figure size 1440x360 with 0 Axes&gt;
+</pre></div></div>
+</div>
+<p>From this example, we can see that setting a threshold around 0.1 should yield good segmentation, as the MFCC derivative appears to cross 0.1 around every syllable onset, but doesn’t cross 0.1 at any other times.</p>
+<p>To be sure, it can be good to look at multiple example files. You can change which example is displayed by changing the <code class="docutils literal notranslate"><span class="pre">file_idx</span></code> argument to <code class="docutils literal notranslate"><span class="pre">avn.segmentation.Plot.plot_seg_criteria()</span></code>:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">avn</span><span class="o">.</span><span class="n">segmentation</span><span class="o">.</span><span class="n">Plot</span><span class="o">.</span><span class="n">plot_seg_criteria</span><span class="p">(</span><span class="n">seg_data</span><span class="p">,</span> <span class="n">segmenter</span><span class="p">,</span> <span class="s2">&quot;MFCC Derivative&quot;</span><span class="p">,</span> <span class="n">file_idx</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/tutorial_25_0.png" src="_images/tutorial_25_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;Figure size 1440x360 with 0 Axes&gt;
+</pre></div></div>
+</div>
+<p>Now that we are somewhat confident with a threshold of 0.1, we can use that threshold to generate a <code class="docutils literal notranslate"><span class="pre">SegData</span></code> object (which we have already done in the first section of this tutorial) and plot the resulting segmentations over the spectrogram using <code class="docutils literal notranslate"><span class="pre">avn.segmentation.Plot.plot_segmentations()</span></code>:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">avn</span><span class="o">.</span><span class="n">segmentation</span><span class="o">.</span><span class="n">Plot</span><span class="o">.</span><span class="n">plot_segmentations</span><span class="p">(</span><span class="n">seg_data</span><span class="p">,</span> <span class="n">seg_label</span> <span class="o">=</span> <span class="s2">&quot;Upper threshold = 0.1, Onsets&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/tutorial_27_0.png" src="_images/tutorial_27_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">avn</span><span class="o">.</span><span class="n">segmentation</span><span class="o">.</span><span class="n">Plot</span><span class="o">.</span><span class="n">plot_segmentations</span><span class="p">(</span><span class="n">seg_data</span><span class="p">,</span> <span class="n">seg_label</span> <span class="o">=</span> <span class="s2">&quot;Upper threshold = 0.1, Onsets&quot;</span><span class="p">,</span> <span class="n">file_idx</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/tutorial_28_0.png" src="_images/tutorial_28_0.png" />
+</div>
+</div>
+<p>The white lines in the spectrogram above represent the syllable onset times.</p>
+<p>We can test other segmentation thresholds by generating new <code class="docutils literal notranslate"><span class="pre">SegData</span></code> objects and plotting them as well:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">seg_data_015</span> <span class="o">=</span> <span class="n">segmenter</span><span class="o">.</span><span class="n">make_segmentation_table</span><span class="p">(</span><span class="n">Bird_ID</span><span class="p">,</span> <span class="n">song_folder</span><span class="p">,</span>
+                                                <span class="n">upper_threshold</span> <span class="o">=</span> <span class="mf">0.15</span><span class="p">,</span>
+                                                <span class="n">lower_threshold</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.01</span><span class="p">)</span>
+
+<span class="n">avn</span><span class="o">.</span><span class="n">segmentation</span><span class="o">.</span><span class="n">Plot</span><span class="o">.</span><span class="n">plot_segmentations</span><span class="p">(</span><span class="n">seg_data_015</span><span class="p">,</span> <span class="n">seg_label</span> <span class="o">=</span> <span class="s2">&quot;Upper threshold = 0.15, Onsets&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/tutorial_31_0.png" src="_images/tutorial_31_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">avn</span><span class="o">.</span><span class="n">segmentation</span><span class="o">.</span><span class="n">Plot</span><span class="o">.</span><span class="n">plot_segmentations</span><span class="p">(</span><span class="n">seg_data_015</span><span class="p">,</span> <span class="n">seg_label</span> <span class="o">=</span> <span class="s2">&quot;Upper threshold = 0.15, Onsets&quot;</span><span class="p">,</span> <span class="n">file_idx</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/tutorial_32_0.png" src="_images/tutorial_32_0.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="Calculating-Segmentation-Metrics">
+<h2>Calculating Segmentation Metrics<a class="headerlink" href="#Calculating-Segmentation-Metrics" title="Permalink to this headline">¶</a></h2>
+<p>If you have ‘ground truth’ segmentation data in the correct format, you can also use it to calculate the segmentation accuracy at a single given threshold. First, you must load the true segmentation data from memory, then you can calculate the F1 score, precision, and recall:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ground_truth_data_path</span> <span class="o">=</span> <span class="s2">&quot;../sample_data/&quot;</span> <span class="o">+</span> <span class="n">Bird_ID</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">Bird_ID</span> <span class="o">+</span> <span class="s2">&quot;_syll_table.csv&quot;</span>
+
+<span class="n">seg_data</span> <span class="o">=</span> <span class="n">avn</span><span class="o">.</span><span class="n">dataloading</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">add_ev_song_truth_table</span><span class="p">(</span><span class="n">seg_data</span><span class="p">,</span> <span class="n">ground_truth_data_path</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>This added the ground truth segmentation data to the <code class="docutils literal notranslate"><span class="pre">.true_seg_table</span></code> attribute of <code class="docutils literal notranslate"><span class="pre">seg_data</span></code> in the same format as the <code class="docutils literal notranslate"><span class="pre">.seg_table</span></code> avn generated segmentations:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">seg_data</span><span class="o">.</span><span class="n">true_seg_table</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>files</th>
+      <th>labels</th>
+      <th>onsets</th>
+      <th>offsets</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>G402_43362.23322048_9_19_6_28_42.wav</td>
+      <td>s</td>
+      <td>0.370544</td>
+      <td>0.429705</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>G402_43362.23322048_9_19_6_28_42.wav</td>
+      <td>s</td>
+      <td>0.525578</td>
+      <td>0.590363</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>G402_43362.23322048_9_19_6_28_42.wav</td>
+      <td>s</td>
+      <td>0.774830</td>
+      <td>0.831293</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>G402_43362.23322048_9_19_6_28_42.wav</td>
+      <td>s</td>
+      <td>0.894898</td>
+      <td>0.956372</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>G402_43362.23322048_9_19_6_28_42.wav</td>
+      <td>s</td>
+      <td>1.032925</td>
+      <td>1.103447</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>Now that the we have the ground truth data, we can calculate the metrics:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">seg_data</span> <span class="o">=</span> <span class="n">avn</span><span class="o">.</span><span class="n">segmentation</span><span class="o">.</span><span class="n">Metrics</span><span class="o">.</span><span class="n">calc_F1</span><span class="p">(</span><span class="n">seg_data</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>This added the metrics information to <code class="docutils literal notranslate"><span class="pre">seg_data</span></code> in it’s <code class="docutils literal notranslate"><span class="pre">.seg_metrics</span></code> attribute:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">seg_data</span><span class="o">.</span><span class="n">seg_metrics</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>F1</th>
+      <th>precision</th>
+      <th>recall</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.949675</td>
+      <td>0.91157</td>
+      <td>0.991105</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>If you want to save this information locally, along with the avn generated segmentation table, you can run the following:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">out_file_dir</span> <span class="o">=</span> <span class="s2">&quot;../sample_data/&quot;</span>
+<span class="n">seg_data</span><span class="o">.</span><span class="n">save_as_csv</span><span class="p">(</span><span class="n">out_file_dir</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>This will create two files in the <code class="docutils literal notranslate"><span class="pre">out_file_dir</span></code> folder: - <code class="docutils literal notranslate"><span class="pre">[Bird_ID]_seg_table.csv</span></code> containing the avn generated segmentations - <code class="docutils literal notranslate"><span class="pre">[Bird_ID]_seg_metrics.csv</span></code> containing the segmentation metrics.</p>
+</section>
+<section id="Segmenting-Many-Birds-at-Once">
+<h2>Segmenting Many Birds at Once<a class="headerlink" href="#Segmenting-Many-Birds-at-Once" title="Permalink to this headline">¶</a></h2>
+<p>Often, you’ll want to segment the data of many birds. AVN has built in utility functions to make this easy if you have your data arranged in the compatible configuration. In order to use the following functions, you must have a master folder which contains a subfolder corresponding to each bird, with the folders named with the Bird’s ID. Each bird folder must contain all the .wav files to be segmented for that bird directly (ie not in a subfolder).</p>
+<p>If that is the case, you can specify the list of Bird_IDs that you want to segment and go through the following steps:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">Bird_IDs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;G402&#39;</span><span class="p">,</span> <span class="s1">&#39;R402&#39;</span><span class="p">]</span>
+
+<span class="n">song_folder</span> <span class="o">=</span> <span class="s2">&quot;../sample_data/&quot;</span>
+
+<span class="n">segmenter</span> <span class="o">=</span> <span class="n">avn</span><span class="o">.</span><span class="n">segmentation</span><span class="o">.</span><span class="n">MFCCDerivative</span><span class="p">()</span>
+
+<span class="n">seg_table</span> <span class="o">=</span> <span class="n">avn</span><span class="o">.</span><span class="n">segmentation</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">make_segmentation_table_many_birds</span><span class="p">(</span><span class="n">segmenter</span><span class="p">,</span> <span class="n">Bird_IDs</span><span class="p">,</span>
+                                                                     <span class="n">song_folder</span><span class="p">,</span>
+                                                                     <span class="n">upper_threshold</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+                                                                     <span class="n">lower_threshold</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="n">seg_table</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>onsets</th>
+      <th>offsets</th>
+      <th>files</th>
+      <th>Bird_ID</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.359909</td>
+      <td>0.522449</td>
+      <td>G402_43362.23322048_9_19_6_28_42.wav</td>
+      <td>G402</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.522449</td>
+      <td>0.766259</td>
+      <td>G402_43362.23322048_9_19_6_28_42.wav</td>
+      <td>G402</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.766259</td>
+      <td>0.882358</td>
+      <td>G402_43362.23322048_9_19_6_28_42.wav</td>
+      <td>G402</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.882358</td>
+      <td>1.021678</td>
+      <td>G402_43362.23322048_9_19_6_28_42.wav</td>
+      <td>G402</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>1.021678</td>
+      <td>1.160998</td>
+      <td>G402_43362.23322048_9_19_6_28_42.wav</td>
+      <td>G402</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>If you have the correctly formatted ground truth segmentation data for each bird saved in that bird’s subdirectory and named <code class="docutils literal notranslate"><span class="pre">[Bird_ID]_syll_table.csv</span></code>, you can also calculate the segmentation metrics for many birds at once:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">segmentation_scores</span><span class="p">,</span> <span class="n">seg_table</span> <span class="o">=</span> <span class="n">avn</span><span class="o">.</span><span class="n">segmentation</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">calc_F1_many_birds</span><span class="p">(</span><span class="n">segmenter</span><span class="p">,</span> <span class="n">Bird_IDs</span><span class="p">,</span> <span class="n">song_folder</span><span class="p">,</span>
+                                                                      <span class="n">upper_threshold</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+                                                                      <span class="n">lower_threshold</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="n">segmentation_scores</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>F1</th>
+      <th>precision</th>
+      <th>recall</th>
+      <th>upper_threshold</th>
+      <th>lower_threshold</th>
+      <th>Bird_ID</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.949675</td>
+      <td>0.911570</td>
+      <td>0.991105</td>
+      <td>0.1</td>
+      <td>-0.01</td>
+      <td>G402</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>0.979268</td>
+      <td>0.971979</td>
+      <td>0.986667</td>
+      <td>0.1</td>
+      <td>-0.01</td>
+      <td>R402</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>Likewise, you can perform threshold optimization, looking for the single threshold that results in the highest mean F1 score across birds:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">optimal_threshold</span><span class="p">,</span> <span class="n">peak_mean_F1</span><span class="p">,</span> <span class="n">segmentation_scores</span> <span class="o">=</span> <span class="n">avn</span><span class="o">.</span><span class="n">segmentation</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">threshold_optimization_many_birds</span><span class="p">(</span><span class="n">segmenter</span><span class="p">,</span>
+                                                                                                               <span class="n">Bird_IDs</span><span class="p">,</span>
+                                                                                                               <span class="n">song_folder</span><span class="p">,</span>
+                                                                                                               <span class="n">threshold_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.08</span><span class="p">,</span> <span class="mf">0.13</span><span class="p">),</span>
+                                                                                                               <span class="n">threshold_step</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
+                                                                                                               <span class="n">lower_threshold</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The optimal threshold is: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">optimal_threshold</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The mean F1 score at the optimal threshold is: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">peak_mean_F1</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+The optimal threshold is: 0.11999999999999998
+The mean F1 score at the optimal threshold is: 0.9689321958532062
+</pre></div></div>
+</div>
+<p>You can also plot the segmentations of many birds:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[39]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">avn</span><span class="o">.</span><span class="n">segmentation</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">plot_segmentations_many_birds</span><span class="p">(</span><span class="n">segmenter</span><span class="p">,</span> <span class="n">Bird_IDs</span><span class="p">,</span>
+                                                    <span class="n">song_folder</span><span class="p">,</span>
+                                                    <span class="n">seg_label</span> <span class="o">=</span> <span class="s2">&quot;Syllable Onset&quot;</span><span class="p">,</span>
+                                                    <span class="n">upper_threshold</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+                                                    <span class="n">lower_threshold</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.01</span><span class="p">,</span>
+                                                    <span class="n">files_per_bird</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/tutorial_53_0.png" src="_images/tutorial_53_0.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/tutorial_53_1.png" src="_images/tutorial_53_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/tutorial_53_2.png" src="_images/tutorial_53_2.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/tutorial_53_3.png" src="_images/tutorial_53_3.png" />
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="modules.html" class="btn btn-neutral float-right" title="avn" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Therese Koch.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
