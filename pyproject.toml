@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "avn"
-version = "0.1.0"
+version = "0.1.1"
 description = "Package for zebra finch song analysis."
 authors = ["Therese Koch"]
 license = "GNU General Public License v3.0"
