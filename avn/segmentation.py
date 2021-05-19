@@ -1061,7 +1061,7 @@ class Plot():
         spectrogram = plotting.make_spectrogram(song)
         
         #plot spectrogram 
-        plotting.plot_spectrogram(spectrogram, song.sample_rate)
+        plotting.plot_spectrogram(spectrogram, song.sample_rate, figsize = figsize)
         
         #if plot_ground_truth == True, retrieve subset of true_seg_table 
             #which corresponds to individual file and plot them
