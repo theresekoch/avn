@@ -145,7 +145,7 @@ class Segmenter:
         pass
     
     def make_segmentation_table(self, Bird_ID, song_folder_path, upper_threshold, lower_threshold, 
-                                max_syll_duration = 0.33):
+                                max_syll_duration = 0.33, hop_length = 512, n_fft = 2048):
         """
         
 
@@ -169,7 +169,14 @@ class Segmenter:
             value, the offset will be determined by lower threshold crossing. 
             If the lower threshold crossing still results in a syllable longer
             than this value, the syllable offset will be set to the onset
-            timestamp + `max_syll_duration`. 
+            timestamp + `max_syll_duration`.       
+        hop_length : int > 0, optional
+            The number of samples between successive frames used in the short
+            term fourier transform to generate segmentation criteria values. 
+            The default is 512.
+        n_fft : int > 0, optional
+            The length of the FFT window used to calculate the segmentation 
+            criteria values. The default is 2048.
 
         Returns
         -------
@@ -191,7 +198,7 @@ class Segmenter:
             song = dataloading.SongFile(song_file)
         
             #Calculate value of segmentation criteria (e.g. MFCC, RMSE)
-            seg_criteria = self.get_seg_criteria(song)
+            seg_criteria = self.get_seg_criteria(song, hop_length = hop_length, n_fft = n_fft)
         
             #Create thresholds 
             upper_thresh = self.__get_threshold(seg_criteria, thresh = upper_threshold)
@@ -205,7 +212,8 @@ class Segmenter:
                                                                               max_syll_duration = max_syll_duration)
             #Convert indices to times -- should this be a function?
             all_times = librosa.frames_to_time(np.arange(len(seg_criteria)), 
-                                           sr = song.sample_rate, hop_length = 512)
+                                           sr = song.sample_rate, hop_length = hop_length, 
+                                           n_fft = n_fft)
             syll_onsets = all_times[syll_onset_indices]
             syll_offsets = all_times[syll_offset_indices]
         
@@ -224,6 +232,10 @@ class Segmenter:
         #Create SegData object
         segmentation_data = SegData(Bird_ID, all_data)
         segmentation_data.song_folder_path = song_folder_path
+        
+        #Save n_fft and hop_length to SegData object for future plotting
+        segmentation_data.hop_length = hop_length
+        segmentation_data.n_fft = n_fft
         
         return segmentation_data
       
@@ -396,7 +408,7 @@ class RMSE(Segmenter):
     def __init__(self):
         super().__init__()
         
-    def get_seg_criteria(self, song, hop_length = 256, n_fft = 2048, 
+    def get_seg_criteria(self, song, hop_length = 512, n_fft = 2048, 
                          bandpass = True, lower_cutoff = 200, upper_cutoff = 9000, 
                          rescale = True):
         """
@@ -409,7 +421,7 @@ class RMSE(Segmenter):
             Contains audio data for a single song file
         hop_length : int > 0, optional
             The number of samples between successive frames used in the short
-            term fourier transform to generate RMSE values. The default is 256.
+            term fourier transform to generate RMSE values. The default is 512.
         n_fft : int > 0, optional
             The length of the FFT window used to calculate the RMSE values. 
             The default is 2048.
@@ -461,7 +473,7 @@ class RMSEDerivative(Segmenter):
     def __init__(self):
         super().__init__()
         
-    def get_seg_criteria(self, song, hop_length = 256, n_fft = 2048, 
+    def get_seg_criteria(self, song, hop_length = 512, n_fft = 2048, 
                          bandpass = True, lower_cutoff = 200, upper_cutoff = 9000, 
                          rescale = True, deriv_width = 3):
         """
@@ -474,7 +486,7 @@ class RMSEDerivative(Segmenter):
             Contains audio data for a single song file
         hop_length : int > 0, optional
             The number of samples between successive frames used in the short
-            term fourier transform to generate RMSE values. The default is 256.
+            term fourier transform to generate RMSE values. The default is 512.
         n_fft : int > 0, optional
             The length of the FFT window used to calculate the RMSE values. 
             The default is 2048.
@@ -1137,7 +1149,7 @@ class Plot():
         
         #plot seg_criteria
         x_axis = librosa.frames_to_time(np.arange(len(seg_criteria)), sr = song.sample_rate, 
-                                        hop_length = 512, n_fft = 2048)
+                                        hop_length = 512, n_fft = seg_data.n_fft)
         ax2.plot(x_axis, seg_criteria, color = 'white', label = label)
         ax2.set_ylabel("Segmentation Criteria")
         ax2.legend();
