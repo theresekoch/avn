@@ -681,10 +681,10 @@ class Metrics():
     def __init__(self):
         pass
     
-    def calc_F1 (seg_data, max_gap = 0.05):
+    def calc_F1 (seg_data, max_gap = 0.05, feature = 'onsets'):
         """
-        Calculates the F1 score, precision and recall of syllable onsets in 
-        seg_data.seg_table relative to seg_data.true_seg_table.
+        Calculates the F1 score, precision and recall of syllable onsets or offsets
+        in seg_data.seg_table relative to seg_data.true_seg_table.
 
         Parameters
         ----------
@@ -692,9 +692,12 @@ class Metrics():
             Instance of a SegData object which must have valid `.seg_table` 
             and `.true_seg_table` attributes.
         max_gap : float, optional
-            The maximum allowable gap in seconds between a syllable onset in 
-            `seg_data.seg_table` and in `seg_data.true_seg_table` that will 
+            The maximum allowable gap in seconds between a syllable onset or offset
+            in `seg_data.seg_table` and in `seg_data.true_seg_table` that will 
             be considered a match. The default is 0.05.
+        feature: ['onsets', 'offsets']
+            Specifies whether you want to calculate the F1 score of syllable 
+            onsets or offsets. The default is 'onsets'
 
         Returns
         -------
@@ -720,12 +723,12 @@ class Metrics():
             seg_current_file = seg_data.seg_table[seg_data.seg_table['files'] == current_file]
             truth_current_file = truth_seg_table[truth_seg_table['files'] == current_file]
             
-            #get best matches of truth to segmenter onsets
-            seg_matches = Metrics.__get_best_matches(seg_current_file['onsets'], 
-                                                truth_current_file['onsets'], max_gap)
-            #get best matches of segmenter to truth onsets
-            truth_matches = Metrics.__get_best_matches(truth_current_file['onsets'], 
-                                             seg_current_file['onsets'], max_gap)
+            #get best matches of truth to segmenter onsets/offsets
+            seg_matches = Metrics.__get_best_matches(seg_current_file[feature], 
+                                                truth_current_file[feature], max_gap)
+            #get best matches of segmenter to truth onsets/offsets
+            truth_matches = Metrics.__get_best_matches(truth_current_file[feature], 
+                                             seg_current_file[feature], max_gap)
             
             #calculate F1 components for the given file
             true_positives, false_positives, false_negatives = Metrics.__calc_F1_components_per_file(seg_current_file, 
@@ -758,33 +761,33 @@ class Metrics():
     def __get_best_matches(first_onsets, second_onsets, max_gap):
         """
         Finds the best unique matches between timestamps in two sets. These 
-        timestamps can reflect syllable onsets or offsets generates differently.
+        timestamps can reflect syllable onsets or offsets generatesd differently.
 
         Parameters
         ----------
         first_onsets : pandas Series
-            Contains the timestamps in seconds of syllable onsets calculated
-            with a particular method.
+            Contains the timestamps in seconds of syllable onsets or offsets
+            calculated with a particular method.
         second_onsets : pandas Series
-            Contains the timestamps in seconds of syllable onsets calculated 
-            with a different method.
+            Contains the timestamps in seconds of syllable onsets or offsets
+            calculated with a different method.
         max_gap : float > 0
-            The maximum allowable gap in seconds between onsets in the
-            `first_onsets` and `second_onsets` series where they will still be
-            considered a match.
+            The maximum allowable gap in seconds between onsets or offsets in 
+            the `first_onsets` and `second_onsets` series where they will still
+            be considered a match.
 
         Returns
         -------
         best_matches : numpy ndarray, 1D
-            For every syllable onset in `first_onsets` this 1 dimensional 
-            numpy array contains the index of the best unique match in 
-            `second_onsets`. If there is no unique match within the allowable
-            `max_gap`, the value at that index is `NaN`.
+            For every syllable onset or offset in `first_onsets` this 1 
+            dimensional numpy array contains the index of the best unique 
+            match in `second_onsets`. If there is no unique match within the 
+            allowable `max_gap`, the value at that index is `NaN`.
 
         """
         #Create a grid versions of first_onsets and second_onsets and use them
             #to calcualte the time delta between every possible pair of onsets
-            #from first_onsets and second_onsets.
+            #or offsets from first_onsets and second_onsets.
         first_grid, second_grid = np.meshgrid(first_onsets, second_onsets)
         delta_t_grid = abs(first_grid - second_grid)
         
