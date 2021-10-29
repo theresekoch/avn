@@ -1279,14 +1279,32 @@ class SyntaxData:
         
     def save_syntax_data(self, output_directory):
         """
-        
+        Saves a copy of `.syll_df` as a .csv file in the output directory. Also saves 
+        CSVs of the transition matrices if they exist, and a syntax analysis metadata.csv
+        file with information on the processes used to modify syll_df and create the transition
+        matrices
+
+        Parameters
+        ----------
+        output_directory: string
+            Path to a folder in which to save `[Bird_ID]_syll_df.csv`, 
+            `[Bird_ID]_syntax_analysis_metadata.csv`, and `[Bird_ID]_trans_mat.csv` and 
+            `[Bird_ID]_trans_mat_prob.csv`, if they exist. 
+
+        Returns
+        -------
+        syntax_analysis_metadata: Pandas DataFrame
+            Dataframe containing information about the package version and processing steps 
+            used in creating the versions of .syll_df and transition matrices that were saved 
+            by the function. 
          
         """
         #save the syll_df
         syll_df_out_path = output_directory + self.Bird_ID + '_syll_df.csv'
         self.syll_df.to_csv(syll_df_out_path)
 
-        #check whether transition matrices exist
+        #check whether transition matrices exist.
+        #if the transition matrices do exist: 
         if hasattr(self, 'trans_mat'):
             #set status for metadata
             trans_mat_status = True
@@ -1544,6 +1562,66 @@ class Utils:
     def plot_syntax_raster_all_birds(Bird_IDs, syll_df_folder_path, syll_df_file_name_suffix, song_folder_path,
                                     min_gap = 0.2, label_column_name = None, figsize = (10,10), sort_bouts = True, 
                                     calc_entropy_rate = True):
+        """
+        Plots the syntax raster plot for each bird in Bird_IDs. 
+
+        Parameters
+        ----------
+        Bird_IDs: list of strings
+            List of Bird_IDs (as strings) for which the transition matrix should be plotted. 
+        
+        syll_df_folder_path: string
+            Path to a folder containing a syll_df for each bird in Bird_IDs. 
+            The syll_df must be a dataframe with one row for every syllable 
+            to be analyzed from the subject bird. It must contain columns *onsets* and
+            *offsets* which contain the timestamp in seconds at which the syllable occurs 
+            within a file, *files* which contains the name of the .wav file in 
+            which the syllable is found, and *labels* which contains a categorical
+            label for the syllable type. These can be generated through manual song
+            annotation, or automated labeling methods. The syll_df files must be .csv
+            files named Bird_ID_`syll_df_file_name_suffix`. 
+
+        syll_df_file_name_suffix: string
+            String that specifies the name of the file containing syll_df for each Bird_ID. 
+            For example, if syll_df files are named 'Bird_ID_syll_df.csv', `syll_df_file_name_suffix`
+            should be '_syll_df.csv'. 
+
+        song_folder_path: string
+            Path to a folder containing subfolders named according to the Bird_IDs, where each 
+            subfolder contains the complete set of .wav files used to generate the syll_df loaded 
+            from `syll_df_folder_path`. 
+
+        min_gap: float, optional
+            Minimum duration in seconds for a gap between syllables to be 
+            considered syntactically relevant. This value should be selected 
+            such that gaps between syllables in a bout are shorter than min_gap, 
+            but gaps between bouts are longer than min_gap. The default is 0.2.
+
+        label_column_name: string, optional
+            If the column of the syll_df containing syllable labels is not called 'labels', 
+            the name of that column should be specified here as a string. If no value is 
+            provided, an existing column called 'labels' in syll_df will be used as syllable labels.
+
+        figsize: tuple, optional
+            Tuple to specify dimensions of each output syntax raster plot. The default is (10,10).
+
+        sort_bouts: bool,  optional
+            If True, bouts will be sorted such that bouts with more similar sequences will occupy
+            sequential rows in the plot. This can make it easier to detect syntax patterns
+            agnostic to the order in which bouts were produced. If False, the order of bouts in 
+            `syntax_raster_df` will be the order in which the bouts occur in `self.syll_df`. 
+            The default is True.
+
+        calc_entropy_rate: bool, optional
+            Determines whether entropy rate is calculated for each bird. If True, 
+            entropy rate will be calculated and reported in the title of the syntax raster plot for each bird.
+            The default is True.
+
+        Returns
+        -------
+        None
+
+        """
             
         #loop over each Bird_ID in Bird_IDs
         for Bird_ID in Bird_IDs:
@@ -1731,7 +1809,62 @@ class Utils:
 
     def identify_abnormal_syllables(syll_stats_all_birds, std_cutoff = 2, exclude_calls = True, exclude_intro_notes = True, 
                                     syll_labels_to_exclude = [-1], prop_short_bout_cutoff = 0.5):
+        """
+        Identifies syllables that are over `std_cutoff` standard deviations from the mean 
+        in terms of mean_repetition_length or CV_repetition_length, and returns a version of
+        syll_stats_all_birds with a new column 'abnormal_repetition' containing a boolean
+        to indicate whether that syllable exhibits unusually high repetition or repetition
+        variability. 
 
+        Parameters
+        ----------
+
+        syll_stats_all_birds: Pandas DataFrame
+            Dataframe with one row for each unique syllable type produced by each 
+            bird in Bird_IDs containing information about the repetition and 
+            syntax patterns of each syllable.
+
+        std_cutoff: float, optional
+            The number of standard deviations from the mean a syllable feature must be 
+            for that syllable to be identified as 'abnormal'. The default value is 2. 
+
+        exclude_calls: bool, optional
+            If True, syllables which occur in short bouts  > `prop_short_bout_cutoff` 
+            proprotion of the time will be considered calls, and not be considered when 
+            calculating the mean and std used to identify abnormal syllable types. 
+            These calls will also cannot be identified as 'abnormal'. 
+            If False, syllable occuring in short bouts at high rates will be treated like 
+            standard syllables. The default value is True. 
+        
+        exclude_intro_notes: bool, optional
+            If True, syllables with `intro_note`  == True will not be considered when 
+            calculating the mean and std used to identify abnormal syllable types. 
+            These intro notes also cannot be identified as 'abnormal'. 
+            If False, intro notes will be treated like standard syllables. 
+            The default value is True. 
+
+        syll_labels_to_exclude: list, optional
+            List of syllable labels that should not be  considered when calculating the 
+            mean and std used to identify abnormal syllables. For example, if syllables 
+            are labeled automatically with HDBSCAN, the label '-1' doesn't reflect a 
+            relevant grouping of syllables, and thus shouldn't contribute to population 
+            statistics about syllable repetition patterns. 
+            The default value is [-1]. 
+
+        prop_short_bout_cutoff: float between 0 and 1, optional
+            If exclude_calls == True, syllables with which occur in short bouts with a 
+            proportion greater than this value will be considered calls and be excluded 
+            from analysis of abnormal syllables. 
+
+        Returns
+        -------
+        syll_stats_all_birds: Pandas DataFrame
+            Copy of input `syll_stats_all_birds` dataframe, with will a column called 
+            'abnormal_repetition' added, which contains a boolean value indicating 
+            whether that syllable has a mean_repetition_length or CV_repetition_length
+            over `std_cutoff` standard deviations from the mean. 
+        
+        """
         #drop all rows with syllable labels in syll_labels_to_exclude
         syll_stats_filtered = syll_stats_all_birds[~ syll_stats_all_birds.syllable.isin(syll_labels_to_exclude)]
 
