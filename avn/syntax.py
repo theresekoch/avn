@@ -5,6 +5,8 @@ Created on Wed Oct 20 10:49:15 2021
 @author: Therese
 """
 import avn.dataloading as dataloading
+import avn.plotting as plotting
+#import plotting
 import numpy as np
 import pandas as pd
 import scipy.signal
@@ -1659,7 +1661,7 @@ class Utils:
                 title = Bird_ID
 
             #plot syntax raster
-            syntax_data.plot_syntax_raster(syntax_raster_df, figsize = figsize, title = title)
+            plotting.plot_syntax_raster(syntax_data, syntax_raster_df, figsize = figsize, title = title)
 
     def merge_per_syll_stats(single_rep_stats, short_bout_counts, intro_notes_df):
         """
