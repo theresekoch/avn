@@ -137,9 +137,57 @@ def plot_syntax_raster(syntax_data, syntax_raster_df, figsize = (10, 10), title 
 
     plt.show()
 
-def plot_spectrogram_with_labels(syll_table, song_folder_path, Bird_ID, song_file = None, song_file_index = None, figsize = (80, 10), 
+def plot_spectrogram_with_labels(syll_df, song_folder_path, Bird_ID, song_file = None, song_file_index = None, figsize = (80, 10), 
                                  cmap = 'tab20',  add_legend = True, fontsize = 24):
+    """
+    Plots the sectrogram of a specified file with syllable labels indicated through colored bars overlaid on spectrogram. 
 
+    Parameters
+    ----------
+    syll_df: Pandas DataFrame
+        pandas dataframe containing one row for every syllable to be analyzed
+        from the subject bird. It must contain columns *onsets* and *offsets* 
+        which contain the timestamp in seconds at which the syllable occurs 
+        within a file, *files* which contains the name of the .wav file in 
+        which the syllable is found, and *labels* which contains a categorical
+        label for the syllable type. These can be generated through manual song
+        annotation, or automated labeling methods. 
+
+    song_folder_path: string
+        Path to folder containing a subfolder called `Bird_ID`, which contains 
+        .wav files of songs in syll_df. Should end with '/'.
+
+    Bird_ID: string
+        String containing a unique identifier for the subject bird.
+
+    song_file: string, optional
+        A value must be provided for `song_file` OR `song_file_index`, but not both. 
+        String containing the name of a .wav file in `syll_df` and `song_folder_path/Bird_ID/` 
+        to be plotted. 
+
+    song_file_index: int >= 0, optional
+        A value must be provided for `song_file` or `song_file_index`, but not both. 
+        Denotes the index of the unique file in syll_df.files.unique() to be plotted. 
+
+    figsize: tuple, optional
+        Dimensions of figure to be plotted. The default is (80, 10). 
+
+    cmap: matplotlib colormap, optional
+        matplotlib color map for syllable labels. The colormap must contain more unique shades 
+        than syllable label types. The default value is 'tab20'. 
+
+    add_legend: boolean, optional
+        If True, a legend mapping syllable labels to colors will be plotted over the spectrogram. 
+        If False, no legend will be plotted. The default is True. 
+
+    fontsize: float, optional
+        The size of the font for the legend. The default is 24. 
+
+    Returns
+    -------
+    None
+
+    """
     #if both song file and song file index are prodivided, which file to plot if ambiguous so raise an error
     if (song_file != None) & (song_file_index != None):
         raise RuntimeError("Both `song_file` and `song_file_index` were provided. Please provide only one, otherwise the file to be plotted is ambiguous.")
@@ -150,12 +198,12 @@ def plot_spectrogram_with_labels(syll_table, song_folder_path, Bird_ID, song_fil
     
     #set song file name according to song_file_index if it is provided
     if song_file_index != None: 
-        song_file_name = syll_table.files.unique()[song_file_index]
+        song_file_name = syll_df.files.unique()[song_file_index]
 
     #if neither song file nor song file index are provided we will just plot the first file, but raise a warning
     if (song_file == None) & (song_file_index == None):
-        song_file_name = syll_table.files.unique()[0]
-        warnings.warn("No song_file or song_file_index were provided. The first file in syll_table will be plotted. To avoid ambiguity, please specify either song_file or song_file_index.")
+        song_file_name = syll_df.files.unique()[0]
+        warnings.warn("No song_file or song_file_index were provided. The first file in syll_df will be plotted. To avoid ambiguity, please specify either song_file or song_file_index.")
 
     #set path to song file
     file_path = song_folder_path + Bird_ID + '/' + song_file_name
@@ -177,12 +225,12 @@ def plot_spectrogram_with_labels(syll_table, song_folder_path, Bird_ID, song_fil
     ymin, ymax = ax.get_ylim()
     
     #create color dict for plotting syllable labels
-    labels = syll_table.labels.unique()
+    labels = syll_df.labels.unique()
     colors = plt.cm.get_cmap(cmap)(np.arange(len(labels)))#there must be more unique colors in cmap than label types
     color_dict = dict(zip(labels, colors))
 
     #loop over each syllable in syll_table in song_file:
-    for ix, row in syll_table[syll_table.files == song_file_name].iterrows():
+    for ix, row in syll_df[syll_df.files == song_file_name].iterrows():
 
         #set color for syllable label
         color = color_dict[row.labels]
@@ -201,7 +249,36 @@ def plot_spectrogram_with_labels(syll_table, song_folder_path, Bird_ID, song_fil
                   labelcolor = 'white', markerscale = 3, fontsize = fontsize, loc = 'upper right')
     
 def plot_syll(song, onset, offset, padding = 0, figsize = (5,5), title = None):
+    """
+    Plots the spectrogram of a portion of a song spectrogram (generally a single syllable).
 
+    Parameters
+    ----------
+    song: avn.dataloading.SongFile type object
+        Instance of an avn.SongFile object with `.data`, `.sample_rate` and `.duration` 
+        attributes.
+
+    onset: float
+        Start time in seconds of syllable to plot from `song`. 
+
+    offset: float
+        End time in seconds of syllable to plot from `song`. 
+    
+    padding: float, optional
+        Time in seconds to pad before and after onset and offset times for plotting. 
+        The default value is 0. 
+
+    figsize: tuple, optional
+        Dimensions of the figure to plot. The default is (5,5)
+
+    title: string, optional 
+        Title of the figure to plot. The default is None. 
+
+    Returns
+    -------
+    None
+    
+    """
     syll_data, onset_correction, offset_correction = dataloading.Utils.select_syll(song, onset, offset, padding)
 
     song.data = syll_data
@@ -227,11 +304,56 @@ def plot_syll(song, onset, offset, padding = 0, figsize = (5,5), title = None):
 
     
 class Utils:
+    """
+    Containts plotting utilities. 
+    """
 
     def __init__(): 
         pass
     
     def plot_syll_examples(syll_df, syll_label, song_folder_path, n_examples = 1, random_seed = 2021, padding = 0.25, figsize = (5,5)):
+
+        """
+        Plots `n_examples` examples of syllables with label `syll_label` from `syll_df`. 
+
+        Parameters
+        ----------
+
+        syll_df: Pandas DataFrame
+            pandas dataframe containing one row for every syllable to be analyzed
+            from the subject bird. It must contain columns *onsets* and *offsets* 
+            which contain the timestamp in seconds at which the syllable occurs 
+            within a file, *files* which contains the name of the .wav file in 
+            which the syllable is found, and *labels* which contains a categorical
+            label for the syllable type. These can be generated through manual song
+            annotation, or automated labeling methods.
+
+        syll_label: int, float or string
+            Syllable label class in `syll_df.labels` to plot. 
+
+        song_folder_path: string
+            Path to folder containing a subfolder called `Bird_ID`, which contains 
+            .wav files of songs in syll_df. Should end with '/'.
+
+        n_examples: int, optional
+            The number of random examples of syllable `syll_label` to plot. 
+            The default value is 1. 
+
+        random_seed: int, optional
+            Specifies the random state for selecting example syllables. 
+            The default value is 2021. 
+
+        padding: float, optional
+            The amount of time in seconds before and after syllable onset and offset
+            which should be included in the spectrogram plot. 
+            The default value is 0.25.
+
+        figsize: tuple, optional
+            Tuple specifying the dimensions of the figure(s) to be plotted. 
+            The default value is (5,5)
+
+
+        """
 
         #select subset of syll_df where 'label' == syll_label
         syll_df = syll_df[syll_df.labels == syll_label] 
