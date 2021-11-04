@@ -25,3 +25,10 @@ avn.segmentation module
    :undoc-members:
    :show-inheritance:
 
+avn.syntax module
+-----------------
+
+.. automodule:: avn.syntax
+   :members:
+   :undoc-members:
+   :show-inheritance:
