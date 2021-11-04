@@ -12,7 +12,9 @@
 #
 import os
 import sys
+import sphinx_rtd_theme
 from unittest.mock import MagicMock
+sys.path.insert(0, os.path.abspath('../'))
 sys.path.insert(0, os.path.abspath('../avn/avn'))
 
 #Mock module to bypass pip install

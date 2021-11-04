@@ -154,3 +154,62 @@ class Utils:
         seg_data.true_seg_table = true_seg_table
         
         return seg_data
+
+    def select_syll(song, onset, offset, padding = 0):
+        """
+        Return portion of `song` wavefile between timestamps `onset` and `offset` in seconds + 
+        optional padding. 
+
+        Parameters
+        ----------
+        song: avn.SongFile instance
+            Instance of an avn.SongFile object with `.data`, `.sample_rate` and `.duration` 
+            attributes. 
+
+        onset: float, < offset
+            Time in seconds to start selection in `song`. 
+        
+        offset: float, > onset
+            Time in seconds to end selection in `song`. 
+        
+        padding: float, optional
+            Time in seconds to pad before onset and after offset times when selecting subsection 
+            of `song`. 
+
+        Returns
+        -------
+        syll_data: numpy array, 1D
+            One dimensional numpy array containing wave data corresponding to the period beteween 
+            onset - padding to offset + padding seconds in `song`. 
+
+        onset_correction_diff: float
+            If (onset - padding) results in a timestamp < 0, the selection will start at 0. This value
+            gives the difference between (onset - padding) and the true onset used in cases of 0 
+            crossing. This value is important for plotting the selected syllable appropriately. 
+
+        offset_correction_diff: float 
+            If (offset + padding) results in a timestamp longer than `song.duration`, the selection will 
+            end at `song.duration`. This value gives the difference between (offset + padding) and the 
+            true offset used in cases where the padded offset is longer than the source file. This value
+            is important for plotting the selected syllable appropriately. 
+
+        """
+
+        #calculate the onset time with padding 
+        padded_onset = max(0, onset - padding)
+        #calculate difference between padded onset and onset - padding, if any
+        onset_correction_diff = (onset - padding) - padded_onset
+
+        #calculate the offset time with padding
+        padded_offset = min(offset + padding, song.duration)
+        #calculate the difference between padded offset and offset + paddin, if any
+        offset_correction_diff = (offset + padding) - padded_offset
+
+        #convert onset and offset times to indices
+        on_index = int(padded_onset * song.sample_rate)
+        off_index = int(padded_offset * song.sample_rate)
+
+        #select portion of song data corresponding to indices
+        syll_data = song.data[on_index : off_index]
+
+        return syll_data, onset_correction_diff, offset_correction_diff
