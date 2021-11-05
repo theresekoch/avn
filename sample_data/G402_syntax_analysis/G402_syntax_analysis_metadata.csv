@@ -1,0 +1,2 @@
+,Date,avn_version,syll_df_path,file_boundaries_added,gaps_added,min_gap,calls_dropped,transition_matrices_saved,trans_mat_path,trans_mat_prob_path
+0,2021-11-05,0.2.1,../sample_data/G402_syntax_analysis/G402_syll_df.csv,True,True,0.2,True,True,../sample_data/G402_syntax_analysis/G402_trans_mat.csv,../sample_data/G402_syntax_analysis/G402_trans_mat.csv
