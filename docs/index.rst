@@ -23,6 +23,7 @@ the `github repository <https://github.com/theresekoch/avn>`_
    :maxdepth: 2
 
    tutorial
+   syntax_analysis_demo
 
 .. toctree::
    :caption: Documentation
