@@ -1250,7 +1250,9 @@ class Utils:
     
     def calc_F1_many_birds(segmenter, Bird_IDs, 
                            folder_path, upper_threshold, lower_threshold, 
-                           truth_table_suffix = "_syll_table.csv"):
+                           truth_table_suffix = "_syll_table.csv", 
+                           max_gap = 0.05, 
+                           feature = 'onsets'):
         """
         Calculate the segmentation metrics for all birds in `Bird_IDs` with 
         a given method and threshold. 
@@ -1277,6 +1279,14 @@ class Utils:
             .csv file within folder_path\Bird_ID\ and begin with the Bird_ID
             followed by some descriptor. This is used to specify that final 
             part of the file name. The default is "_syll_table.csv".
+        max_gap : float, optional
+            The maximum allowable gap in seconds between a syllable onset or offset
+            in `seg_data.seg_table` and in `seg_data.true_seg_table` that will 
+            be considered a match. The default is 0.05.
+        feature: ['onsets', 'offsets']
+            Specifies whether you want to calculate the F1 score of syllable 
+            onsets or offsets. The default is 'onsets'
+
 
         Returns
         -------
@@ -1308,7 +1318,7 @@ class Utils:
             seg_data = dataloading.Utils.add_ev_song_truth_table(seg_data, song_folder + Bird_ID + truth_table_suffix)
             
             #calculate segmentation accuracy metrics. 
-            seg_data = Metrics.calc_F1(seg_data)
+            seg_data = Metrics.calc_F1(seg_data, max_gap = max_gap, feature = feature)
             
             #package metrics information into a dataframe
             segmentation_score = seg_data.seg_metrics
