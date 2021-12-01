@@ -1010,6 +1010,108 @@ class Metrics():
         false_negatives = np.isnan(true_matches).sum()
         
         return(true_positives, false_positives, false_negatives)
+
+    def __get_match_times(truth_matches, seg_current_file, feature = 'onsets'):
+        """ Given the indices of timestamp matches and a table of timestamps, this 
+        function returns the timestamps matching the indices. 
+
+        Parameters
+        ----------
+
+        truth_matches: numpy ndarray, 1D
+            One dimensional array containing the indices of onset or offset detections 
+            in `seg_current_file` that align with an onset or offset in the ground truth 
+            segmentation able at that index. 
+            For example, truth_matches[1] should contain the index of the row in `seg_current_file`
+            which matches the timestamps in row 1 of truth_current_file. 
+        seg_current_file: pandas DataFrame
+            Dataframe containing all the segmenter generated syllable onsets and offsets in a 
+            given file. It must contain the columns 'onsets' and 'offsets', which each have the 
+            timestamp in seconds of a syllable onset or offset within the given file. The rows 
+            must be in the order the syllables are produced in the file. 
+        feature: ['onsets', 'offsets']
+            Specifies whether you want to align matches of syllable onsets or offsets. The 
+            default is 'onsets'. 
+
+        Returns
+        -------
+
+        matched_times: numpy ndarray, 1D
+            One dimensional array containing the timestamps of syllable onsets or offsets in 
+            `seg_current_file` which correspond to the row indices in `truth_matches`. 
+            
+        """
+
+        #initialize empty 1D array to contain timestamps
+        matched_times = np.zeros_like(truth_matches)
+
+        #loop through each match and add timestamps to matched_times
+        for i, match_idx in enumerate(truth_matches):
+            #if the match_idx is nan, that means the true syll had no match, so record nan as the timestamp
+            if np.isnan(match_idx):
+                matched_times[i] = np.nan
+            else: 
+                matched_times[i] = seg_current_file[feature].iloc[int(match_idx)]
+        
+        return matched_times
+
+    def get_time_delta_df(seg_data, max_gap = 0.05, feature = 'onsets'):
+        """Creates a dataframes with the segmenter generated timestamps that align 
+        to ground truth timestamps for either syllable onsets or offsets within 
+        `max_gap` seconds. 
+
+        Parameters
+        ----------
+
+        seg_data: avn.segmentation.SegData instance
+            Instance of a SegData object which must have valid `.seg_table` 
+            and `.true_seg_table` attributes.
+        max_gap: float, optional
+            The maximum allowable gap in seconds between a syllable onset or offset
+            in `seg_data.seg_table` and in `seg_data.true_seg_table` that will 
+            be considered a match. The default is 0.05.
+        feature: ['onsets', 'offsets']
+            Specifies whether you want to get the matched timestamps of syllable 
+            onsets or offsets. The default is 'onsets'
+
+        Returns:
+        all_matched_times: pandas DataFrame
+            DataFrame with columns 'True_feat_times' and 'Seg_matched_times', 
+            containing the timestamps in seconds of a ground truth syllable 
+            onset or offset, and the matched automatically segmented syllable 
+            onset or offset, respectively. This can be used to look at the 
+            distribution of time differences between true and generated 
+            segmentations. 
+        """
+
+        #initialize dataframe to contain matched timestamps for all files
+        all_matched_times = pd.DataFrame()
+        
+        #loop over each individual file
+        for current_file in np.unique(seg_data.seg_table['files']):
+            
+            #filter the segmentation tables so that they contain only syllables from 
+            #the current file.
+            seg_current_file = seg_data.seg_table[seg_data.seg_table['files'] == current_file]
+            truth_current_file = seg_data.true_seg_table[seg_data.true_seg_table['files'] == current_file]
+
+            #get best matches of segmenter onsets/offsets to true timestamps
+            truth_matches = Metrics.__get_best_matches(truth_current_file[feature], 
+                                                       seg_current_file[feature], max_gap)
+            
+            #get timestamps of segmenter matches to true onsets/offsets
+            matched_times = Metrics.__get_match_times(truth_matches, seg_current_file, feature)
+
+            #create dataframe with timestamps of matches
+            curr_file_matches_df = pd.DataFrame({'True_feat_times': truth_current_file[feature], 
+                                                 'Seg_matched_times' : matched_times, 
+                                                 'files' : current_file})
+            
+            #append dataframe for current file to dataframe with all files
+            all_matched_times = pd.concat([all_matched_times, curr_file_matches_df])
+
+        return all_matched_times
+
         
         
 class Plot():
@@ -1250,7 +1352,9 @@ class Utils:
     
     def calc_F1_many_birds(segmenter, Bird_IDs, 
                            folder_path, upper_threshold, lower_threshold, 
-                           truth_table_suffix = "_syll_table.csv"):
+                           truth_table_suffix = "_syll_table.csv", 
+                           max_gap = 0.05, 
+                           feature = 'onsets'):
         """
         Calculate the segmentation metrics for all birds in `Bird_IDs` with 
         a given method and threshold. 
@@ -1277,6 +1381,14 @@ class Utils:
             .csv file within folder_path\Bird_ID\ and begin with the Bird_ID
             followed by some descriptor. This is used to specify that final 
             part of the file name. The default is "_syll_table.csv".
+        max_gap : float, optional
+            The maximum allowable gap in seconds between a syllable onset or offset
+            in `seg_data.seg_table` and in `seg_data.true_seg_table` that will 
+            be considered a match. The default is 0.05.
+        feature: ['onsets', 'offsets']
+            Specifies whether you want to calculate the F1 score of syllable 
+            onsets or offsets. The default is 'onsets'
+
 
         Returns
         -------
@@ -1308,7 +1420,7 @@ class Utils:
             seg_data = dataloading.Utils.add_ev_song_truth_table(seg_data, song_folder + Bird_ID + truth_table_suffix)
             
             #calculate segmentation accuracy metrics. 
-            seg_data = Metrics.calc_F1(seg_data)
+            seg_data = Metrics.calc_F1(seg_data, max_gap = max_gap, feature = feature)
             
             #package metrics information into a dataframe
             segmentation_score = seg_data.seg_metrics
@@ -1323,8 +1435,84 @@ class Utils:
             segmentations_df = segmentations_df.append(segmentation_df)
             
         return segmentation_scores, segmentations_df
+
+    def get_time_deltas_many_birds(segmenter, Bird_IDs, folder_path, 
+                                   upper_threshold, lower_threshold, 
+                                   max_gap = 0.05, feature = 'onsets', 
+                                   truth_table_suffix = "_syll_table.csv"):
+        """Creates a dataframes with the segmenter generated timestamps that align 
+        to ground truth timestamps for either syllable onsets or offsets within 
+        `max_gap` seconds for all birds in `Bird_IDs`. 
+
+        Parameters
+        ----------
+
+        segmenter: avn.segmentation.Segmenter daughter class object.
+            Determines the segmentation method. 
+        Bird_IDs: List of strings
+            List of unique bird identifiers. These should correspond to the 
+            names of subfolders within the `folder_path` directory.
+        folder_path: str
+            Path to a local directory containing subdirectories named with the 
+            Bird IDs in `Bird_IDs`, which in turn contain the .wav files to be
+            segmented.
+        upper_threshold : float > lower_threshold
+            Value of the upper segmentation criteria threshold for detecting
+            syllable onsets. 
+        lower_threshold : float < upper_threshold
+            Value of the lower segmentation criteria threshold used for detecting 
+            syllable offsets. 
+        max_gap : float, optional
+            The maximum allowable gap in seconds between a syllable onset or offset
+            in `seg_data.seg_table` and in `seg_data.true_seg_table` that will 
+            be considered a match. The default is 0.05.
+        feature: ['onsets', 'offsets']
+            Specifies whether you want to get the matched timestamps of syllable 
+            onsets or offsets. The default is 'onsets'
+        truth_table_suffix: str, optional
+            This function requires that the truth table data be located in a 
+            .csv file within folder_path\Bird_ID\ and begin with the Bird_ID
+            followed by some descriptor. This is used to specify that final 
+            part of the file name. The default is "_syll_table.csv".
+
+        Returns
+        -------
+
+        all_time_deltas_df: Pandas DataFrame
+            DataFrame with columns 'True_feat_times' and 'Seg_matched_times', 
+            containing the timestamps in seconds of a ground truth syllable 
+            onset or offset, and the matched automatically segmented syllable 
+            onset or offset, respectively. This can be used to look at the 
+            distribution of time differences between true and generated 
+            segmentations.
+
+        """
+        #initialize empty dataframe to append to
+        all_time_deltas_df = pd.DataFrame()
+
+        #loop through each bird
+        for Bird_ID in Bird_IDs:
+            #construct full path to folder containing song files
+            song_folder = folder_path + Bird_ID + "/" 
+
+            #make segmentations
+            seg_data = segmenter.make_segmentation_table(Bird_ID, song_folder, 
+                                                         upper_threshold = upper_threshold, 
+                                                         lower_threshold = lower_threshold)
             
-        
+            #load ground truth segmentations from memory
+            seg_data = dataloading.Utils.add_ev_song_truth_table(seg_data, song_folder + Bird_ID + truth_table_suffix)
+
+            #get time delta table for current bird
+            curr_time_delta_df = Metrics.get_time_delta_df(seg_data, max_gap = max_gap, feature = feature)
+            #add bird_ID to current df
+            curr_time_delta_df['Bird_ID'] = Bird_ID
+            #append to dataframe with all birds
+            all_time_deltas_df = pd.concat([all_time_deltas_df, curr_time_delta_df])
+
+        return all_time_deltas_df
+
+
     def threshold_optimization_many_birds(segmenter, Bird_IDs, folder_path,
                                           threshold_range, threshold_step, lower_threshold, 
                                           truth_table_suffix = "_syll_table.csv"):
