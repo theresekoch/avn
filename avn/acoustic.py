@@ -27,7 +27,26 @@ class SongInterval:
                  win_length = 400, hop_length = 40, n_fft = 1024, 
                  max_F0 = 1830, min_frequency = 380, freq_range = 0.5, 
                  baseline_amp = 70, fmax_yin = 8000, ):
-        
+        """Acoustic Feature data pertaining to a single interval of audio
+
+        Args:
+            song_file (avn.dataloading.SongFile): SongFile instance containing audio interval of interest.
+            onset (int, optional): onset timestamp in seconds of the interval of interest within the SongFile. Defaults to 0.
+            offset (int, optional): offset timestamp in seconds of the interval of interest within the SongFile. 
+                If not specified, this will correspond to the end of the SongFile. 
+            win_length (int, optional): Length of window over which to calculate each feature in samples. Defaults to 400.
+            hop_length (int, optional): Number of samples to advance between windows. Defaults to 40.
+            n_fft (int, optional): Length of the transformed axis of the output. If n is smaller than the length of the win_length, 
+                the input is cropped. If it is larger, the input is padded with zeros. Defaults to 1024.
+            max_F0 (int, optional): Maximum allowable fundamental frequency of signal in Hz. Defaults to 1830.
+            min_frequency (int, optional): Lower frequency cutoff in Hz. Only power at frequencies above this will contribute to
+                feature calculations. Defaults to 380.
+            freq_range (float, optional): Proportion of power spectrum frequency bins to consider. Defaults to 0.5, 
+                meaning we only consider the lower half of the frequency range. This is consistent with SAP.
+            baseline_amp (int, optional): Baseline amplitude used to calculated amplitude in dB. Defaults to 70.
+            fmax_yin (int, optional): Maximum frequency in Hz used to estimate fundamental frequency with the YIN algorithm. 
+                Defaults to 8000.
+        """
         #set specified or default parameters
         self.onset = onset
         self.win_length = win_length
@@ -80,8 +99,7 @@ class SongInterval:
         Goodness of pitch is an estimate of the harmonic periodicity of a signal. 
         Higher values indicate a more periodic sound (like a harmonic stack), whereas 
         lower values indicate less periodic sounds (like noise). Formally, it is the 
-        peak of the cepstrum of the signal for harmonics with a fundamental frequency
-        below `max_F0`. 
+        peak of the cepstrum of the signal for fundamental frequencies below `max_F0`. 
 
         Returns:
             np.array: array containing the goodness of pitch for each frame in the song interval.
@@ -108,10 +126,12 @@ class SongInterval:
     
     def calc_mean_frequency(self):
         """Calculates the mean frequency of each window in a song interval.
+
         This is one way to estimate the pitch of a signal. It is the center of the distribution of power across frequencies in the signal. 
         For another estimate of pitch, see `SongInterval.calc_pitch()`
+
         Returns:
-            np.array: array containing the mean frequency of each frame in the song interval.
+            np.array: array containing the mean frequency of each frame in the song interval in Hz.
         """
         if self.power_spectra is None:
             self._get_power_spectra()
@@ -128,7 +148,7 @@ class SongInterval:
         #loop over each window in the song interval
         for i in range(len(self.windows)):
             power_spectrum = self.power_spectra[i]
-            ##calculate mean frequency for each frame, considering only frequencies above min_freq_index and below max_freq_index
+            #calculate mean frequency for each frame, considering only frequencies above min_freq_index and below max_freq_index
             power_spectrum = power_spectrum[ self.min_freq_index : self.max_freq_index ]
             mean_frequency = np.sum(power_spectrum * frequencies[self.min_freq_index:]) / np.sum(power_spectrum)
             mean_frequencies[i] = mean_frequency
@@ -145,7 +165,7 @@ class SongInterval:
         sound is stable (like in a flat harmonic stack). This implementation is based on SAP. 
 
         Returns:
-            np.array: array containing the mean frequency of each frame in the song interval.
+            np.array: array containing the frequency modulation of each frame in the song interval.
         """
         if self.freq_derivs is None:
             self._get_freq_derivative()
@@ -193,8 +213,8 @@ class SongInterval:
         Weiner entropy is a measure of the uniformity of power spread across frequency bands in a frame of audio. 
         The output of this function is log-scaled Weiner entropy, which can range in value from 0 to negative 
         infinity. A score close to 0 indicates broadly spread power across frequency bands, ie a less structured 
-        sound like noise. A large negative score indicates low uniformity across frequency bands, ie a more 
-        structured sound like a harmonic stack.
+        sound like white noise. A large negative score indicates low uniformity across frequency bands, ie a more 
+        structured sound like a harmonic stack or pure tone.
 
         Returns:
             np.array: array containing the log-scaled Weiner entropy of each frame in the song interval.
@@ -221,7 +241,7 @@ class SongInterval:
     def calc_amplitude(self):
         """Calculates the amplitude of each window in a song interval.
 
-        Amplitude is the volume of a sound in decibels, considering only frequencies above self.min_frequency.
+        Amplitude is the volume of a sound in decibels, considering only frequencies above min_frequency.
 
         Returns:
             np.array: array containing the amplitude of each frame in the song interval in decibels
@@ -245,7 +265,7 @@ class SongInterval:
     def calc_pitch(self):
         """Estimates the fundamental frequency (or pitch) of each window in a song interval using the yin algorithm. 
 
-        For more information on the YIN algorithm for fundamental frequency estimation, please refer to the documentaion 
+        For more information on the YIN algorithm for fundamental frequency estimation, please refer to the documentation 
         for `librosa.yin()`. 
 
         Returns:
@@ -267,21 +287,23 @@ class SongInterval:
         self.windows = song_frames
 
     def _apply_tapers(self):
-        """Apply 2 multitapers to the song frame. 
+        """Apply 2 multitapers to each window in the song interval. 
 
-        Applying multitapers to song frame before calculating its spectrum through 
+        Applying multitapers to a song frame before calculating its spectrum through 
         a fast fourier transform (FFT) can improve the FFT's estimate of the power
         spectrum for emperical data. 
         """
         if self.windows is None:
             self._make_windows()
 
+        #get tapers
         tapers = scipy.signal.windows.dpss(self.win_length, 1.5, Kmax = 2)
+        #apply tapers
         self.windows1 = self.windows * tapers[0, :]
         self.windows2 = self.windows * tapers[1, :]
 
     def _get_spectra(self):
-        """Calculate the complex spectrum of each window in the song interval
+        """Calculate the complex spectrum of each window in the song interval.
 
         Calculates the complex spectrum (meaning it contains both real and imaginary components)
         for each window with either taper 1 or taper 2 applied. These are necessary for computing 
@@ -302,7 +324,7 @@ class SongInterval:
         self.spectra2 = spectra2
 
     def _get_cepstra(self):
-        """Compute the real cepstrum of a frame of audio.
+        """Compute the real cepstrum of each window in the song interval.
 
         The cepstrum of a signal is the inverse fourier transform of the log fourier transform
         of the signal. It is useful for looking at periodic patterns across frequency bands in 
@@ -324,7 +346,7 @@ class SongInterval:
         self.cepstra = cepstra
 
     def _get_power_spectra(self):
-        """Computes the power spectrum of each window in a song interval.
+        """Computes the power spectrum of each window in the song interval.
 
         The power spectrum of a signal gives the distribution of power across frequency bands of that
         signal. It is necessary to compute mean frequency, frequency modulation, weiner entropy, etc.
@@ -344,7 +366,7 @@ class SongInterval:
         self.power_spectra = power_spectra
 
     def _get_freq_indices(self):
-        """Calculate the index in a spectrum corresponding to the min_frequency frequency band and a maximum 
+        """Calculate the index in a spectrum corresponding to the `min_frequency` frequency band and a maximum 
         frequency band determined by `freq_range`. 
 
         The output min_freq_index and max_freq_index values can be used to select a subset of a spectrum containing
@@ -361,7 +383,8 @@ class SongInterval:
         self.min_freq_index = np.min(np.argwhere(frequencies > self.min_frequency))
 
     def _get_time_derivative(self):
-        """Calculate the time derivative of a spectrum for each window in a song interval.
+        """Calculate the time derivative of a spectrum for each window in the song interval.
+
         The time derivative is subsequently used to calculate amplitude and frequency modulation. 
         """
         if self.spectra1 is None:
@@ -381,7 +404,8 @@ class SongInterval:
         self.time_derivs = time_derivs
 
     def _get_freq_derivative(self):
-        """Calculate the frequency derivative of a spectrum for each window in a song interval.
+        """Calculate the frequency derivative of a spectrum for each window in the song interval.
+
         The frequency derivative is subsequently used to calculate amplitude and frequency modulation. 
         """
         if self.spectra1 is None:
@@ -400,79 +424,120 @@ class SongInterval:
             freq_derivs[i] = (spect1.imag * spect2.real) - (spect1.real * spect2.imag)
         self.freq_derivs = freq_derivs
 
-    def calc_all_features(self):
-        """Calculate all acoustic features for each window in a song interval. 
+    def calc_all_features(self, features = ['Goodness', 'Mean_frequency', 
+                                            'Entropy', 'Amplitude', 
+                                            'Amplitude_modulation', 
+                                            'Frequency_modulation', 'Pitch']):
+        
+        """Calculate all acoustic features for each window in the song interval. 
 
         This method returns a dictionary containing the time series values for 
         Goodness, Mean_frequency, Entropy, Amplitude, Amplitude_modulation, 
         Frequency_modulation, and Pitch calculated for each window in the song interval. 
 
+        Args:
+            features (list, optional): This is a list of all acoustic features you want returned. By default, 
+            all available acoustic features will be returned. That consists of 'Goodness', 'Mean_frequency',
+            'Entropy', 'Amplitude', 'Amplitude_modulation', 'Frequency_modulation', and 'Pitch'. If you don't
+            need all these features, pass a list of only those features you do want. Be sure to enter the feature 
+            names exactly as written above, otherwise the feature will not be calculated.
+
         Returns:
             dict: dictionary containing the time series values for 
         Goodness, Mean_frequency, Entropy, Amplitude, Amplitude_modulation, 
-        Frequency_modulation, and Pitch as np.arrays. 
+        Frequency_modulation, and Pitch (or the specified subset thereof) as np.arrays. 
         """
-        if self.goodness is None:
-            self.calc_goodness()
-        if self.mean_frequency is None:
-            self.calc_mean_frequency()
-        if self.entropy is None:
-            self.calc_entropy()
-        if self.amplitude is None:
-            self.calc_amplitude()
-        if self.AM is None:
-            self.calc_amplitude_modulation()
-        if self.FM is None:
-            self.calc_frequency_modulation()
-        if self.pitch is None:
-            self.calc_pitch()
+        #initialize empty dict to store all requested features
+        acoustic_features = {}
 
-        acoustic_features = {"Goodness" : self.goodness, 
-                             "Mean_frequency" : self.mean_frequency, 
-                             "Entropy" : self.entropy, 
-                             "Amplitude" : self.amplitude, 
-                             "Amplitude_modulation" : self.AM, 
-                             "Frequency_modulation" : self.FM, 
-                             "Pitch" : self.pitch}
+        #calculate each feature if it hasn't already been stored and add to dict
+        if 'Goodness' in features:
+            if self.goodness is None:
+                self.calc_goodness()
+            acoustic_features['Goodness'] = self.goodness
+        if 'Mean_frequency' in features:
+            if self.mean_frequency is None:
+                self.calc_mean_frequency()
+            acoustic_features['Mean_frequency'] = self.mean_frequency
+        if 'Entropy' in features:
+            if self.entropy is None:
+                self.calc_entropy()
+            acoustic_features['Entropy'] = self.entropy
+        if 'Amplitude' in features:
+            if self.amplitude is None:
+                self.calc_amplitude()
+            acoustic_features['Amplitude'] = self.amplitude
+        if 'Amplitude_modulation' in features:
+            if self.AM is None:
+                self.calc_amplitude_modulation()
+            acoustic_features['Amplitude_modulation'] = self.AM
+        if 'Frequency_modulation' in features:
+            if self.FM is None:
+                self.calc_frequency_modulation()
+            acoustic_features['Frequency_modulation'] = self.FM
+        if 'Pitch' in features:
+            if self.pitch is None:
+                self.calc_pitch()
+            acoustic_features['Pitch'] = self.pitch
+
         return acoustic_features
     
-    def calc_feature_stats(self):
+    def calc_feature_stats(self, features = ['Goodness', 'Mean_frequency', 
+                                            'Entropy', 'Amplitude', 
+                                            'Amplitude_modulation', 
+                                            'Frequency_modulation', 'Pitch']):
         """Calculate summary statistics for acoustic features over a song interval.
+
         This method returns a dataframe containing the mean, min, max, std, 25th percentile, 
-        50th percentile and 75th percentile values for all acoustic features (Goodness, 
-        Mean_frequency, Amplitude, Amplitude_modulation, Frequency_modulation and Pitch) across 
-        the current song interval.
+        50th percentile and 75th percentile values for all acoustic features specified from among 'Goodness', 
+        'Mean_frequency', 'Entropy', 'Amplitude', 'Amplitude_modulation', 'Frequency_modulation', and 'Pitch' 
+        across the current song interval.
+
+        Args:
+            features (list, optional): This is a list of all acoustic features you want returned. By default, 
+            all available acoustic features will be returned. That consists of 'Goodness', 'Mean_frequency',
+            'Entropy', 'Amplitude', 'Amplitude_modulation', 'Frequency_modulation', and 'Pitch'. If you don't
+            need all these features, pass a list of only those features you do want. Be sure to enter the feature 
+            names exactly as written above, otherwise the feature will not be calculated.
 
         Returns:
             pd.DataFrame: Dataframe with a column for each acoustic feature, with the different 
             summary statistics in each row.
         """
         #calculate all acoustic features
-        acoustic_features = self.calc_all_features()
+        acoustic_features = self.calc_all_features(features = features)
         #convert acoustic features dict to dataframe
         acoustic_features = pd.DataFrame(acoustic_features)
         #calculate summary statistics
         acoustic_features_summary = acoustic_features.describe().drop('count') #count is just the number of windows which isn't important. 
         return acoustic_features_summary
     
-    def save_features(self, out_file_path, file_name):
-        """Save acoustic features and metadata as .csv files
+    def save_features(self, out_file_path, file_name, features = ['Goodness', 'Mean_frequency', 
+                                            'Entropy', 'Amplitude', 
+                                            'Amplitude_modulation', 
+                                            'Frequency_modulation', 'Pitch']):
+        """Save acoustic features and metadata as .csv files.
 
         Saves a table with the acoustic features for each window in the 
         song interval as a .csv file called  `file_name_features.csv`. 
         It also saves a .csv file called `file_name_metadata.csv` with 
         all the hyperparameter values used to calculate the features, 
         as well as the avn version, the original file name and the 
-        onset and offset timestamps.  
+        onset and offset timestamps of the interval within the file.  
 
         Args:
             out_file_path (str): Path to a folder in which to save the .csv files. Must end in '/'. 
             file_name (str): name of the file to serve as the root name for the `_features.csv` and 
             `_metadata.csv` files. 
+            features (list, optional): This is a list of all acoustic features you want returned. By default, 
+            all available acoustic features will be returned. That consists of 'Goodness', 'Mean_frequency',
+            'Entropy', 'Amplitude', 'Amplitude_modulation', 'Frequency_modulation', and 'Pitch'. If you don't
+            need all these features, pass a list of only those features you do want. Be sure to enter the feature 
+            names exactly as written above, otherwise the feature will not be calculated.
         """
 
         #Get acoustic features
-        acoustic_features = self.calc_all_features()
+        acoustic_features = self.calc_all_features(features = features)
         #convert to dataframe
         acoustic_features = pd.DataFrame(acoustic_features)
         #get hyperparameters and convert them to dataframe
@@ -483,8 +548,12 @@ class SongInterval:
         #save hyperparameters
         hyperparams.to_csv(out_file_path + file_name + "_metadata.csv")
 
-    def save_feature_stats(self, out_file_path, file_name):
-        """Save summary statistics for acoustic features and metadata as .csv files
+    def save_feature_stats(self, out_file_path, file_name, features = ['Goodness', 'Mean_frequency', 
+                                            'Entropy', 'Amplitude', 
+                                            'Amplitude_modulation', 
+                                            'Frequency_modulation', 'Pitch']):
+        """Save summary statistics for acoustic features and metadata as .csv files.
+
         Saves a table with summary statistics (mean, max, min, std, 25th, 50th and
         75th percentiles) for each acoustic feature across the song interval as a 
         .csv file called `file_name_feature_stats.csv`.
@@ -497,9 +566,14 @@ class SongInterval:
             out_file_path (str): Path to a folder in which to save the .csv files. Must end in '/'. 
             file_name (str): name of the file to serve as the root name for the `_feature_stats.csv` 
             and `_metadata.csv` files. 
+            features (list, optional): This is a list of all acoustic features you want returned. By default, 
+            all available acoustic features will be returned. That consists of 'Goodness', 'Mean_frequency',
+            'Entropy', 'Amplitude', 'Amplitude_modulation', 'Frequency_modulation', and 'Pitch'. If you don't
+            need all these features, pass a list of only those features you do want. Be sure to enter the feature 
+            names exactly as written above, otherwise the feature will not be calculated.
         """
         #get acoustic feature summary
-        feature_stats = self.calc_feature_stats()
+        feature_stats = self.calc_feature_stats(features=features)
         #get hyperparmeters/ metadata and convert to dataframe
         hyperparams = pd.DataFrame(self._get_hyperparameters())
 
@@ -509,12 +583,13 @@ class SongInterval:
         hyperparams.to_csv(out_file_path + file_name + "_metadata.csv")
 
     def _get_hyperparameters(self):
-        """Get all hyperparameters and metadata in dict
+        """Get all hyperparameters and metadata in a dictionary. 
+
         Assembles a dictionary containing all the necessary information 
         to reproduce the current feature calculations. This is saved
         as a .csv file automatically when the acoustic feature or acoustic
         feature summary statistics are saved using the `.save_features()` 
-        or `.save_feature_stats()` methods
+        or `.save_feature_stats()` methods.
 
         Returns:
             dict: dictionary containing all the necessary information to 
@@ -536,4 +611,305 @@ class SongInterval:
                        'fmax_yin' : self.fmax_yin}
         return hyperparams
 
+class AcousticData:
+    
+    def __init__(self, Bird_ID, syll_df, song_folder_path, 
+                 win_length = 400, hop_length = 40, n_fft = 1024, 
+                 max_F0 = 1830, min_frequency = 380, freq_range = 0.5, 
+                 baseline_amp = 70, fmax_yin = 8000, ):
+        """Acoustic Feature data pertaining to a set of syllables in `syll_df`.
 
+        Args:
+            Bird_ID (str): String containing a unique identifier for the subject bird
+            syll_df (pd.DataFrame): pandas dataframe containing one row for every syllable 
+            to be analyzed from the subject bird. It must contain columns *onsets* and *offsets* 
+            which contain the timestamp in seconds at which the syllable occurs 
+            within a file, and *files* which contains the name of the .wav file in 
+            which the syllable is found. These can be generated through manual song
+            annotation, or automated segmentation methods.
+            song_folder_path (str): Path to folder containing the .wav files of the songs in 
+            `syll_df`. Should end with '/'. 
+            win_length (int, optional): Length of window over which to calculate each feature in samples. Defaults to 400.
+            hop_length (int, optional): Number of samples to advance between windows. Defaults to 40.
+            n_fft (int, optional): Length of the transformed axis of the output. If n is smaller than the length of the win_length, 
+                the input is cropped. If it is larger, the input is padded with zeros. Defaults to 1024.
+            max_F0 (int, optional): Maximum allowable fundamental frequency of signal in Hz. Defaults to 1830.
+            min_frequency (int, optional): Lower frequency cutoff in Hz. Only power at frequencies above this will contribute to
+                feature calculation. Defaults to 380.
+            freq_range (float, optional): Proportion of power spectrum frequency bins to consider. Defaults to 0.5, 
+                meaning we only consider the lower half of the frequency range. This is consistent with SAP.
+            baseline_amp (int, optional): Baseline amplitude used to calculated amplitude in dB. Defaults to 70.
+            fmax_yin (int, optional): Maximum frequency in Hz used to estimate fundamental frequency with the YIN algorithm. 
+                Defaults to 8000.
+        """
+        #set specified or default parameters
+        self.win_length = win_length
+        self.hop_length = hop_length
+        self.n_fft = n_fft
+        self.max_F0 = max_F0
+        self.min_frequency = min_frequency
+        self.freq_range = freq_range
+        self.baseline_amp = baseline_amp
+        self.fmax_yin = fmax_yin
+
+        self.Bird_ID = Bird_ID
+        self.syll_df = syll_df
+        self.song_folder_path = song_folder_path
+
+        #make sure there are no negative onset times in syll_df
+        #by replacing all negative onsets with an onset time of 0.
+        self.syll_df['onsets'] = self.syll_df.onsets.where(syll_df.onsets > 0, 0)
+
+        #initialize empty attributes to be calculated as needed
+        self.all_features = None
+        self.all_feature_stats = None
+
+    def calc_all_features(self, features = ['Goodness', 'Mean_frequency', 
+                                            'Entropy', 'Amplitude', 
+                                            'Amplitude_modulation', 
+                                            'Frequency_modulation', 'Pitch']):
+        """Calculates all specified acoustic features as time series 
+        for each song interval in the syllable table.
+
+        Returns a dataframe with one row for each syllable in the syll_df, and a column for each 
+        acoustic feature. Each cell contains a vector with the acoustic feature values for each 
+        short time window in the interval. 
+        
+        NOTE: It is generally more useful to instead have summary statistics for each feature
+        for each syllable(ie the mean and std of the feature, rather than it's value as a time series).
+          For this, see `.calc_all_feature_stats()`.
+
+        Args:
+            features (list, optional):This is a list of all acoustic features you want returned. By default, 
+            all available acoustic features will be returned. That consists of 'Goodness', 'Mean_frequency',
+            'Entropy', 'Amplitude', 'Amplitude_modulation', 'Frequency_modulation', and 'Pitch'. If you don't
+            need all these features, pass a list of only those features you do want. Be sure to enter the feature 
+            names exactly as written above, otherwise the feature will not be calculated.
+
+        Returns:
+            pd.DataFrame: DataFrame with one row for each syllable in the syll_df, and a column for each acoustic feature. 
+                Each cell contains a vector with the acoustic feature values for each short time window in the interval.
+        """
+        #initialize empty dataframe to add each syllable's features to. 
+        all_features_df = pd.DataFrame()
+        #loop over all song files in self.syll_df
+        for song_file in self.syll_df.files.unique():
+            #load song file
+            file_path = self.song_folder_path + song_file
+            song = avn.dataloading.SongFile(file_path)
+            #select all syllables in the current file
+            curr_file_sylls = self.syll_df[self.syll_df.files == song_file]
+            #loop over each syllable in the current file and add acoustic features to DF
+            for i, row in curr_file_sylls.iterrows():
+
+                #create song interval object for current syllable
+                curr_interval = SongInterval(song, row.onsets, row.offsets, 
+                                             win_length = self.win_length, 
+                                             hop_length = self.hop_length, 
+                                             n_fft = self.n_fft, 
+                                             max_F0 = self.max_F0, 
+                                             min_frequency = self.min_frequency, 
+                                             freq_range = self.freq_range, 
+                                             baseline_amp = self.baseline_amp, 
+                                             fmax_yin = self.fmax_yin)
+                #calculate all acoustic features
+                acoustic_features = curr_interval.calc_all_features(features = features)
+                #convert acoustic feature vectors to lists so they will be stored in a single DF cell
+                acoustic_features = {key : [value] for key, value in acoustic_features.items()}
+                #convert to dataframe - single row with each cell containing a list of values for each window in the interval
+                acoustic_features = pd.DataFrame(acoustic_features)
+                #add syll_df data to features df
+                acoustic_features = pd.concat([acoustic_features, pd.DataFrame(row).T.reset_index().drop(columns = 'index')], axis = 1)
+                #append to growing df
+                all_features_df = pd.concat([all_features_df, acoustic_features])
+
+        self.all_features = all_features_df
+        return all_features_df
+
+    def calc_all_feature_stats(self, features = ['Goodness', 'Mean_frequency', 
+                                            'Entropy', 'Amplitude', 
+                                            'Amplitude_modulation', 
+                                            'Frequency_modulation', 'Pitch']):
+        """Calculates summary statistics for all acoustic features 
+        specified for each song interval in the syll_df.
+
+        This method returns a DataFrame containing the mean, min, max, std, 25th percentile, 
+        50th percentile and 75th percentile values for each acoustic feature specified for
+        each song intervals in the syll_df. These values can be useful for clustering syllables, 
+        detecting unusual syllable types, or measuring song changes after a manipulation. 
+
+        Args:
+            features (list, optional):This is a list of all acoustic features you want returned. By default, 
+            all available acoustic features will be returned. That consists of 'Goodness', 'Mean_frequency',
+            'Entropy', 'Amplitude', 'Amplitude_modulation', 'Frequency_modulation', and 'Pitch'. If you don't
+            need all these features, pass a list of only those features you do want. Be sure to enter the feature 
+            names exactly as written above, otherwise the feature will not be calculated.
+
+        Returns:
+            pd.DataFrame: DataFrame with one row for each song interval in the syll_df, and one column 
+            for each summary statistic for each acoustic feature (organized with hierarchical column indexing). 
+        """
+        #initialize empty dataframe to add syll stats to. 
+        all_feature_stats_df = pd.DataFrame()
+        #loop over all song files in self.syll_df
+        for song_file in self.syll_df.files.unique():
+            #load song file
+            file_path = self.song_folder_path + song_file
+            song = avn.dataloading.SongFile(file_path)
+            #select all syllables in the current file
+            curr_file_sylls = self.syll_df[self.syll_df.files == song_file]
+            #loop over each syllable in the current file and add acoustic features to DF
+            for i, row in curr_file_sylls.iterrows():
+
+                #create song interval object for current syllable
+                curr_interval = SongInterval(song, row.onsets, row.offsets, 
+                                             win_length = self.win_length, 
+                                             hop_length = self.hop_length, 
+                                             n_fft = self.n_fft, 
+                                             max_F0 = self.max_F0, 
+                                             min_frequency = self.min_frequency, 
+                                             freq_range = self.freq_range, 
+                                             baseline_amp = self.baseline_amp, 
+                                             fmax_yin = self.fmax_yin)
+                #calculate feature stats
+                feature_stats =  curr_interval.calc_feature_stats(features = features)
+                #convert to data frame - single row per syllable
+                feature_stats = feature_stats.unstack().to_frame().T
+                #add syll_df data to feature_stats df
+                new_columns = pd.MultiIndex.from_product([['Syll_info'], row.to_frame().transpose().columns.to_list()])
+                row_flipped = row.to_frame().transpose()
+                row_flipped.columns = new_columns
+
+                feature_stats = pd.concat([row_flipped, feature_stats.set_index(row_flipped.index)], axis = 1)
+                #append to growing df
+                all_feature_stats_df = pd.concat([all_feature_stats_df, feature_stats])
+
+        self.all_feature_stats = all_feature_stats_df
+        return all_feature_stats_df
+    
+    def save_features(self, out_file_path, file_name, features = ['Goodness', 'Mean_frequency', 
+                                            'Entropy', 'Amplitude', 
+                                            'Amplitude_modulation', 
+                                            'Frequency_modulation', 'Pitch']):
+        """Save acoustic feature time series for each song interval in syll_df and metadata as .csv files.
+
+        Saves a table with all specified acoustic features as time series for each 
+        song interval in syll_df as a .csv file called  `file_name_all_features.csv`. 
+        It also saves a .csv file called `file_name_metadata.csv` with 
+        all the hyperparameter values used to calculate the features, 
+        as well as the avn version.  
+
+        NOTE: Saving The full time series for all features will occupy considerable disk space
+        and isn't necessary in most cases. See `.save_feature_stats()` to save summary
+        statistics for each feature for each syllable, rather than the full time series. 
+
+        Args:
+            out_file_path (str): Path to a folder in which to save the .csv files. Must end in '/'. 
+            file_name (str): name of the file to serve as the root name for the `_all_features.csv` and 
+            `_metadata.csv` files. 
+            features (list, optional): This is a list of all acoustic features you want returned. By default, 
+            all available acoustic features will be returned. That consists of 'Goodness', 'Mean_frequency',
+            'Entropy', 'Amplitude', 'Amplitude_modulation', 'Frequency_modulation', and 'Pitch'. If you don't
+            need all these features, pass a list of only those features you do want. Be sure to enter the feature 
+            names exactly as written above, otherwise the feature will not be calculated.
+
+        """
+        #if the features haven't been calculated yet, do that
+        if self.all_features is None:
+            all_features = self.calc_all_features(features = features) 
+        # if the table already exists check that it contains all the specified features, otherwise just make a new table.
+        elif not all(item in self.all_features.columns for item in features):
+            all_features = self.calc_all_features(features = features) 
+        # if it already exists and has all the necessary features, select only the columns for the specified features and no extra    
+        else:
+            all_feats = ['Goodness', 'Mean_frequency', 
+                            'Entropy', 'Amplitude', 
+                            'Amplitude_modulation', 
+                            'Frequency_modulation', 'Pitch']
+            feat_to_drop = set(all_feats) - set(features)
+            all_features = self.all_features.drop(columns = feat_to_drop)
+
+        #get hyperparameters / metadata and convert to dataframe
+        hyperparams = pd.DataFrame(self._get_hyperparameters())
+
+        #save features df
+        all_features.to_csv(out_file_path + file_name + "_all_features.csv")
+        #save hyperparameters
+        hyperparams.to_csv(out_file_path + file_name + "_metadata.csv")
+
+    def save_feature_stats(self, out_file_path, file_name, features = ['Goodness', 'Mean_frequency', 
+                                            'Entropy', 'Amplitude', 
+                                            'Amplitude_modulation', 
+                                            'Frequency_modulation', 'Pitch']):
+        """Save summary statistics for all features specified for each syllable in syll_df.
+
+        Saves a dataframe containing the mean, min, max, std, 25th percentile, 
+        50th percentile and 75th percentile values for each acoustic feature specified and for
+        each song intervals in the syll_df in a file called `file_name_all_feature_stats.csv`.
+        These values can be useful for clustering syllables, detecting unusual syllable types, 
+        or detecting song changes after a manipulation. It also saves a .csv file called 
+        `file_name_metadata.csv` with all the hyperparameter values used to calculate the features, 
+        as well as the avn version. 
+
+        Args:
+            out_file_path (str): Path to a folder in which to save the .csv files. Must end in '/'. 
+            file_name (str): name of the file to serve as the root name for the `_all_feature_stats.csv` and 
+            `_metadata.csv` files. 
+            features (list, optional): This is a list of all acoustic features you want returned. By default, 
+            all available acoustic features will be returned. That consists of 'Goodness', 'Mean_frequency',
+            'Entropy', 'Amplitude', 'Amplitude_modulation', 'Frequency_modulation', and 'Pitch'. If you don't
+            need all these features, pass a list of only those features you do want. Be sure to enter the feature 
+            names exactly as written above, otherwise the feature will not be calculated.
+        """
+        #if the features stats haven't been calculated yet, do that
+        if self.all_feature_stats is None:
+            all_feature_stats = self.calc_all_feature_stats(features = features)
+       
+        # if the table already exists check that it contains all the specified features, otherwise just make a new table.
+        elif not all(item in self.all_feature_stats.columns.get_level_values(0) for item in features):
+            all_feature_stats = self.calc_all_feature_stats(features = features) 
+            
+        # if it already exists and has all the necessary features, select only the columns for the specified features and no extra    
+        else:
+            all_feats = ['Goodness', 'Mean_frequency', 
+                            'Entropy', 'Amplitude', 
+                            'Amplitude_modulation', 
+                            'Frequency_modulation', 'Pitch']
+            feat_to_drop = set(all_feats) - set(features)
+            all_feature_stats = self.all_feature_stats.drop(columns = feat_to_drop, level = 0)
+
+        #get hyperparameters / metadata and convert to dataframe
+        hyperparams = pd.DataFrame(self._get_hyperparameters())
+
+        #save feature stats df
+        all_feature_stats.to_csv(out_file_path + file_name + "_all_feature_stats.csv")
+        #save hyperparameters
+        hyperparams.to_csv(out_file_path + file_name + "_metadata.csv")
+        
+    def _get_hyperparameters(self):
+        """Get all hyperparameters and metadata in dictionary. 
+        
+        Assembles a dictionary containing all the necessary information 
+        to reproduce the current feature calculations. This is saved
+        as a .csv file automatically when the acoustic feature or acoustic
+        feature summary statistics are saved using the `.save_features()` 
+        or `.save_feature_stats()` methods
+
+        Returns:
+            dict: dictionary containing all the necessary information to 
+            reproduce the current feature calculations. 
+        """
+        #create dictionary of hyperparameters and metadata
+        hyperparams = {'Date' : [datetime.date.today().strftime('%Y-%m-%d')],
+                       'Bird_ID' : self.Bird_ID, 
+                       'avn_version' : [avn.__version__], 
+                       'win_length' : self.win_length, 
+                       'hop_length' : self.hop_length, 
+                       'n_fft' : self.n_fft, 
+                       'max_F0' : self.max_F0, 
+                       'min_frequency' : self.min_frequency, 
+                       'freq_range' : self.freq_range, 
+                       'baseline_amp' : self.baseline_amp, 
+                       'fmax_yin' : self.fmax_yin}
+        return hyperparams
+        
