@@ -627,10 +627,10 @@ class SongInterval:
         #this is a bit hacky. Maybe be worth revisiting in the future. 
         song.data = self.song_data
         #make spectrogram
-        spectrogram = plotting.make_spectrogram(song)
+        spectrogram = avn.plotting.make_spectrogram(song)
         #plot spectrogram
         fig, ax = plt.subplots(figsize = figsize)
-        plotting.plot_spectrogram(spectrogram, song.sample_rate, ax)
+        avn.plotting.plot_spectrogram(spectrogram, song.sample_rate, ax)
         #create second axis to plot feature
         ax2 = ax.twinx()
         #calculate x axis to plot feature over time, not over windows

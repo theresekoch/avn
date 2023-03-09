@@ -1,0 +1,2 @@
+,Date,file,onset,offset,avn_version,win_length,hop_length,n_fft,max_F0,min_frequency,freq_range,baseline_amp,fmax_yin
+0,2023-03-09,../sample_data/G402/G402_43362.23322048_9_19_6_28_42.wav,0,2,0.2.1,400,40,1024,1830,380,0.5,70,8000

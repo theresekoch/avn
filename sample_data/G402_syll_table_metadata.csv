@@ -1,0 +1,2 @@
+,Date,Bird_ID,avn_version,win_length,hop_length,n_fft,max_F0,min_frequency,freq_range,baseline_amp,fmax_yin
+0,2023-03-09,G402,0.2.1,400,40,1024,1830,380,0.5,70,8000

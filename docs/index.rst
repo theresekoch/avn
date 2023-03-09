@@ -16,7 +16,6 @@ the `github repository <https://github.com/theresekoch/avn>`_
    :maxdepth: 1
 
    installation
-   tutorial
 
 .. toctree::
    :caption: Tutorials
@@ -24,6 +23,8 @@ the `github repository <https://github.com/theresekoch/avn>`_
 
    tutorial
    syntax_analysis_demo
+   acoustic_feature_demo
+
 
 .. toctree::
    :caption: Documentation
