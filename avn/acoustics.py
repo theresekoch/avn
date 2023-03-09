@@ -610,6 +610,37 @@ class SongInterval:
                        'baseline_amp' : self.baseline_amp, 
                        'fmax_yin' : self.fmax_yin}
         return hyperparams
+    
+    def plot_feature(self, feature, figsize = (20, 5)):
+        """Plot specified acoustic feature over spectrogram of song interval.
+
+        Args:
+            feature (str): The acoustic feature that you want plotted. Options are 'Goodness', 'Mean_frequency',
+            'Entropy', 'Amplitude', 'Amplitude_modulation', 'Frequency_modulation', and 'Pitch'. 
+            figsize (tuple, optional): dimensions of figure. Defaults to (20, 5).
+        """
+        #compute song feature
+        feature_val = self.calc_all_features(features = feature)[feature]
+        #create a copy of a SongFile object
+        song = self.full_file
+        #update SongFile object to correspond to only the current selected interval
+        #this is a bit hacky. Maybe be worth revisiting in the future. 
+        song.data = self.song_data
+        #make spectrogram
+        spectrogram = plotting.make_spectrogram(song)
+        #plot spectrogram
+        fig, ax = plt.subplots(figsize = figsize)
+        plotting.plot_spectrogram(spectrogram, song.sample_rate, ax)
+        #create second axis to plot feature
+        ax2 = ax.twinx()
+        #calculate x axis to plot feature over time, not over windows
+        x_axis = librosa.frames_to_time(np.arange(len(feature_val)), 
+                                        sr = song.sample_rate, 
+                                        hop_length= self.hop_length)
+        #plot feature
+        ax2.plot(x_axis, feature_val, color = 'white', label = feature)
+        ax2.set_ylabel(feature);
+
 
 class AcousticData:
     
