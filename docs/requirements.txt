@@ -6,3 +6,4 @@ nbsphinx==0.8.4
 sphinx-autoapi==1.8.1
 sphinxcontrib-napoleon==0.7
 jinja2==2.11.2
+markupsafe==2.0.1
