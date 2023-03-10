@@ -656,15 +656,15 @@ class AcousticData:
     """Acoustic Feature data pertaining to a set of syllables in `syll_df`.
 
     Args:
-        Bird_ID (str): String containing a unique identifier for the subject bird
+        Bird_ID (str): String containing a unique identifier for the subject bird.
         syll_df (pd.DataFrame): pandas dataframe containing one row for every syllable 
-        to be analyzed from the subject bird. It must contain columns *onsets* and *offsets* 
-        which contain the timestamp in seconds at which the syllable occurs 
-        within a file, and *files* which contains the name of the .wav file in 
-        which the syllable is found. These can be generated through manual song
-        annotation, or automated segmentation methods.
+            to be analyzed from the subject bird. It must contain columns *onsets* and *offsets* 
+            which contain the timestamp in seconds at which the syllable occurs 
+            within a file, and *files* which contains the name of the .wav file in 
+            which the syllable is found. These can be generated through manual song
+            annotation, or automated segmentation methods.
         song_folder_path (str): Path to folder containing the .wav files of the songs in 
-        `syll_df`. Should end with '/'. 
+            `syll_df`. Should end with '/'. 
         win_length (int, optional): Length of window over which to calculate each feature in samples. Defaults to 400.
         hop_length (int, optional): Number of samples to advance between windows. Defaults to 40.
         n_fft (int, optional): Length of the transformed axis of the output. If n is smaller than the length of the win_length, 
