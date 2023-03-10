@@ -32,3 +32,11 @@ avn.syntax module
    :members:
    :undoc-members:
    :show-inheritance:
+
+avn.acoustics module
+-----------------
+
+.. automodule:: avn.acoustics
+   :members:
+   :undoc-members:
+   :show-inheritance:

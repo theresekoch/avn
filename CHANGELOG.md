@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.0 (03/10/2023)
+
+### Feature
+- Added acoustics module
+
 ## v0.2.0 (04/11/2021)
 
 ### Feature
