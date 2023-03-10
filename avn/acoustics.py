@@ -655,28 +655,28 @@ class SongInterval:
 class AcousticData:
     """Acoustic Feature data pertaining to a set of syllables in `syll_df`.
 
-        Args:
-            Bird_ID (str): String containing a unique identifier for the subject bird
-            syll_df (pd.DataFrame): pandas dataframe containing one row for every syllable 
-            to be analyzed from the subject bird. It must contain columns *onsets* and *offsets* 
-            which contain the timestamp in seconds at which the syllable occurs 
-            within a file, and *files* which contains the name of the .wav file in 
-            which the syllable is found. These can be generated through manual song
-            annotation, or automated segmentation methods.
-            song_folder_path (str): Path to folder containing the .wav files of the songs in 
-            `syll_df`. Should end with '/'. 
-            win_length (int, optional): Length of window over which to calculate each feature in samples. Defaults to 400.
-            hop_length (int, optional): Number of samples to advance between windows. Defaults to 40.
-            n_fft (int, optional): Length of the transformed axis of the output. If n is smaller than the length of the win_length, 
-                the input is cropped. If it is larger, the input is padded with zeros. Defaults to 1024.
-            max_F0 (int, optional): Maximum allowable fundamental frequency of signal in Hz. Defaults to 1830.
-            min_frequency (int, optional): Lower frequency cutoff in Hz. Only power at frequencies above this will contribute to
-                feature calculation. Defaults to 380.
-            freq_range (float, optional): Proportion of power spectrum frequency bins to consider. Defaults to 0.5, 
-                meaning we only consider the lower half of the frequency range. This is consistent with SAP.
-            baseline_amp (int, optional): Baseline amplitude used to calculated amplitude in dB. Defaults to 70.
-            fmax_yin (int, optional): Maximum frequency in Hz used to estimate fundamental frequency with the YIN algorithm. 
-                Defaults to 8000.
+    Args:
+        Bird_ID (str): String containing a unique identifier for the subject bird
+        syll_df (pd.DataFrame): pandas dataframe containing one row for every syllable 
+        to be analyzed from the subject bird. It must contain columns *onsets* and *offsets* 
+        which contain the timestamp in seconds at which the syllable occurs 
+        within a file, and *files* which contains the name of the .wav file in 
+        which the syllable is found. These can be generated through manual song
+        annotation, or automated segmentation methods.
+        song_folder_path (str): Path to folder containing the .wav files of the songs in 
+        `syll_df`. Should end with '/'. 
+        win_length (int, optional): Length of window over which to calculate each feature in samples. Defaults to 400.
+        hop_length (int, optional): Number of samples to advance between windows. Defaults to 40.
+        n_fft (int, optional): Length of the transformed axis of the output. If n is smaller than the length of the win_length, 
+            the input is cropped. If it is larger, the input is padded with zeros. Defaults to 1024.
+        max_F0 (int, optional): Maximum allowable fundamental frequency of signal in Hz. Defaults to 1830.
+        min_frequency (int, optional): Lower frequency cutoff in Hz. Only power at frequencies above this will contribute to
+            feature calculation. Defaults to 380.
+        freq_range (float, optional): Proportion of power spectrum frequency bins to consider. Defaults to 0.5, 
+            meaning we only consider the lower half of the frequency range. This is consistent with SAP.
+        baseline_amp (int, optional): Baseline amplitude used to calculated amplitude in dB. Defaults to 70.
+        fmax_yin (int, optional): Maximum frequency in Hz used to estimate fundamental frequency with the YIN algorithm. 
+            Defaults to 8000.
         """
     
     def __init__(self, Bird_ID, syll_df, song_folder_path, 
