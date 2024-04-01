@@ -40,3 +40,11 @@ avn.acoustics module
    :members:
    :undoc-members:
    :show-inheritance:
+
+avn.timing module
+-----------------
+
+.. automodule:: avn.timing
+   :members:
+   :undoc-members:
+   :show-inheritance:
