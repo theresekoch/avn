@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.0 (04/01/2024)
+
+### Feature
+- Added timing module
+- Updated dataloading.SongFile to be compatible with updated librosa version. 
+
 ## v0.3.0 (03/10/2023)
 
 ### Feature

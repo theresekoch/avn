@@ -47,7 +47,7 @@ class SongFile:
         """
         self.sample_rate, self.data = wavfile.read(file_path)
         self.data = self.data.astype(float)
-        self.duration = librosa.get_duration(self.data, sr = self.sample_rate)
+        self.duration = librosa.get_duration(y = self.data, sr = self.sample_rate)
         self.file_path = file_path
         
         #get file name -- This may be windows specific. 

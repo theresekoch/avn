@@ -24,6 +24,7 @@ the `github repository <https://github.com/theresekoch/avn>`_
    tutorial
    syntax_analysis_demo
    acoustic_feature_demo
+   timing_analysis_demo
 
 
 .. toctree::
