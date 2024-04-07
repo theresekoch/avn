@@ -3,6 +3,7 @@
 [![Python](https://img.shields.io/badge/python-3.9-blue)]()
 [![codecov](https://codecov.io/gh/theresekoch/avn/branch/main/graph/badge.svg)](https://codecov.io/gh/theresekoch/avn)
 [![Documentation Status](https://readthedocs.org/projects/avn/badge/?version=latest)](https://avn.readthedocs.io/en/latest/?badge=latest)
+[![DOI](https://zenodo.org/badge/362525428.svg)](https://zenodo.org/doi/10.5281/zenodo.10938742)
 
 `avn` (Avian Vocalization Network, pronounced 'avian') is a python package for zebra finch song analysis. It currently provides functions
 necessary for threshold-based song segmentation into syllables, with plans for more features in the future. 
