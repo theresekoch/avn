@@ -3,11 +3,13 @@ version: 2
 
 # Image to use
 build:
-  image: latest
+  os: ubuntu-22.04
+  tools:
+    python: "3.8"
 
 # Configuration
 python:
-  version: 3.8
+  #version: 3.8
   install:
     - requirements: docs/requirements.txt
     - method: pip
