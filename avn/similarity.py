@@ -7,24 +7,15 @@ Created on Fri May 3 2024
 import numpy as np
 import pandas as pd
 import librosa
-import matplotlib.pyplot as plt
 import avn.dataloading
 import torchvision.datasets as datasets
 import numpy as np
 import os
-import matplotlib.patches as patches
 import pandas as pd
-import matplotlib.pyplot as plt
-from sklearn import metrics
 import torch
-from torch.optim import lr_scheduler
-import torch.optim as optim
-from torch.autograd import Variable
 import torch.nn as nn
 import torch.nn.functional as F
-import glob
 from typing import Any, Callable, cast, Dict, List, Optional, Tuple
-from sklearn.model_selection import train_test_split
 from emd import emd
 
 
@@ -302,23 +293,7 @@ class CustomDatasetFolderNoClass(datasets.DatasetFolder):
 
         See :class:`DatasetFolder` for details.
         """
-
-        if self.train is False:
-            classes = []
-
-            subdirectory = directory 
-
-            for sub_subdirectory in os.scandir(subdirectory):
-                if sub_subdirectory.is_dir():
-                    classes.append(subdirectory + "/" + sub_subdirectory.name)
-
-
-        classes = sorted(classes)
         classes = ['']
-        
-
-        if not classes:
-            raise FileNotFoundError(f"Couldn't find any class folder in {directory}.")
 
         class_to_idx = {cls_name: i for i, cls_name in enumerate(classes)}
         return classes, class_to_idx
@@ -343,14 +318,14 @@ def _embeddings_from_dataloader(dataloader, model, n_dim=8):
             k += len(images)
     return embeddings
 
-def calc_embeddings(Bird_ID, spectrograms_dir, model, n_dim = 8):
+def calc_embeddings(Bird_ID, spectrograms_dir, model):
     
     single_bird_dataset = CustomDatasetFolderNoClass(spectrograms_dir, extensions = (".npy"), loader = np.load, 
                                     train = False, Bird_ID = Bird_ID)
 
     single_bird_dataloader = torch.utils.data.DataLoader(single_bird_dataset, batch_size=64, shuffle=False)
 
-    single_bird_embeddings = _embeddings_from_dataloader(single_bird_dataloader, model, n_dim = n_dim)
+    single_bird_embeddings = _embeddings_from_dataloader(single_bird_dataloader, model, n_dim = 8)
 
     return single_bird_embeddings
 
