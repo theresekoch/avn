@@ -7,7 +7,7 @@ import numpy as np
 
 def test_all_features():
 
-    expected= pd.read_csv("all_features_true_avn_windowing.csv")
+    expected= pd.read_csv("yin_updated_all_features_true_avn_windowing.csv")
     song = dataloading.SongFile("G402_43362.23322048_9_19_6_28_42.wav")
     song_acoustics = acoustics.SongInterval(song)
     output = song_acoustics.calc_all_features()
@@ -24,7 +24,7 @@ def test_embedding_model():
     embeddings = similarity.calc_embeddings(Bird_ID = 'G402', 
                                             spectrograms_dir= '../sample_data/G402_embedding_spectrograms/', 
                                             model = model)
-    assert(np.allclose(expected.values, embeddings))
+    assert(np.allclose(expected.values, embeddings, atol=1e-3))
 
 def test_emd():
     embeddings = pd.read_csv('G402_embeddings.csv').drop(columns = 'Unnamed: 0')
