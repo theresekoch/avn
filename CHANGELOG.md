@@ -1,5 +1,6 @@
 # Changelog
 
+similarity_scoring_module
 ## v.0.5.0 (05/05/2024)
 
 ### Feature
@@ -8,6 +9,7 @@
 ### Note
 - The required librosa version was bumped from 0.8.0 to 0.10.2. This version has some bug fixes to the `librosa.yin()` function, which is what AVN uses to calculate pitch in the acoustics module. The calculated pitch values will be slightly different with this new version. See [here] (https://github.com/librosa/librosa/issues/1425) for more information on this change. 
 
+main
 ## v0.4.0 (04/01/2024)
 
 ### Feature

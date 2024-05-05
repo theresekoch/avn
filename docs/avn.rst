@@ -56,3 +56,4 @@ avn.similarity module
    :members:
    :undoc-members:
    :show-inheritance:
+
