@@ -23,7 +23,8 @@ class Mock(MagicMock):
     def __getattr__(cls, name):
         return MagicMock()
 
-MOCK_MODULES = ['librosa', 'librosa.display']
+MOCK_MODULES = ['librosa', 'librosa.display', 
+               'torchvision.datasets', 'torch', 'torch.nn', 'torch.nn.functional', 'emd']
 sys.modules.update((mod_name, Mock())for mod_name in MOCK_MODULES)
 # -- Project information -----------------------------------------------------
 
