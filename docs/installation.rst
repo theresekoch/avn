@@ -12,6 +12,6 @@ as explained `here <https://pytorch.org/get-started/locally/)>`.
 
 Then you will need to install the package that we use for EMD calculations. That can be done by running this 
 command from a command prompt with your virtual environment activated: 
-`pip install -e git+https://github.com/theresekoch/pyemd.git#egg=emd`
+```pip install -e git+https://github.com/theresekoch/pyemd.git#egg=emd```
 Once you've done that you should be all set! If you run into any issues installing these dependencies, 
 please reach out via `email<mailto:therese.koch1@gmail.com>`_ or through `github <https://github.com/theresekoch/avn>`_. 
