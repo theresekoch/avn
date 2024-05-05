@@ -48,3 +48,12 @@ avn.timing module
    :members:
    :undoc-members:
    :show-inheritance:
+
+avn.similarity module
+-----------------
+
+.. automodule:: avn.similarity
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
