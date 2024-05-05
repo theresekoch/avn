@@ -56,9 +56,7 @@ def prep_spects(Bird_ID, segmentations, song_folder_path, out_dir, n_files = Non
     - 'files' : the name of the .wav file in which a syllable is found, 
     - 'onsets' : the onset of the syllable within the .wav file in seconds, and 
     - 'offsets': the offset of the syllable within the .wav file in seconds. 
-    
     We recommend using [WhisperSeg](https://github.com/nianlonggu/WhisperSeg) to automatically segment song syllables and generate this type of table.
-
     :type segmentations: pd.DataFrame
     :param song_folder_path: path to the folder containing all wav files from `segmentations`.
     :type song_folder_path: str
@@ -91,6 +89,7 @@ def prep_spects(Bird_ID, segmentations, song_folder_path, out_dir, n_files = Non
     :type pad_length: int>0, optional
     :return: None
     :rtype: None
+
     """
     #initialize df for audio
     syllable_dfs = pd.DataFrame()
