@@ -265,7 +265,7 @@ def load_model(device = 'auto'):
     :rtype: avn.similarity.EmbeddingNet
     """
     #check device
-    if device is 'auto':
+    if device == 'auto':
         cuda = torch.cuda.is_available()
         if cuda:
             device = 'cuda'
