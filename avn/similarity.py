@@ -18,6 +18,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from typing import Any, Callable, cast, Dict, List, Optional, Tuple
 from emd import emd
+import importlib.resources as pkg_resources
 
 
 def _make_embedding_spect(syll_wav, sr, hop_length, win_length, n_fft, amin, ref_db, min_level_db, 
@@ -276,12 +277,13 @@ def load_model(device = 'auto'):
     #specify model architecture 
     model = EmbeddingNet()
     #load model weights
-    model.load_state_dict(torch.load('..\\8D_trained_embedding_model.pth', map_location = torch.device(device)))
-    model.to(device)
-    model.device = device
-    model.eval()
+    with pkg_resources.path('avn', '8D_trained_embedding_model.pth') as model_path: 
+        model.load_state_dict(torch.load(model_path, map_location = torch.device(device)))
+        model.to(device)
+        model.device = device
+        model.eval()
 
-    return model
+        return model
 
 
 
