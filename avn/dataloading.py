@@ -113,7 +113,7 @@ class Utils:
         syll_table['offsets'] = syll_table['offsets'] / 1000
         
         #remove .not.mat file extension from file names in files column
-        syll_table['files'] = syll_table['files'].str.split('.not', 1).str[0]
+        syll_table['files'] = syll_table['files'].str.split(pat = '.not', n = 1).str[0]
         
         return syll_table
       
@@ -148,7 +148,7 @@ class Utils:
         true_seg_table['offsets'] = true_seg_table['offsets'] / 1000
         
         #remove .not.mat file extension from file names in file column
-        true_seg_table['files'] = true_seg_table['files'].str.split('.not', 1).str[0]
+        true_seg_table['files'] = true_seg_table['files'].str.split(pat = '.not', n = 1).str[0]
         
         #add reformated ground truth segmentation table as an attribute of seg_data
         seg_data.true_seg_table = true_seg_table
