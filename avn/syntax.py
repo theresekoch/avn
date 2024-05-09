@@ -1079,7 +1079,8 @@ class SyntaxData:
         #add title
         plt.title(title)
 
-        plt.show()
+        #plt.show()
+        return fig
 
     def _get_sylls_in_short_bouts(self, syll_df, max_short_bout_len = 2):
         """

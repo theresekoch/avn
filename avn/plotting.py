@@ -66,6 +66,7 @@ def plot_spectrogram(spectrogram, sample_rate, ax = None, figsize = (20, 5)):
                              y_axis = 'hz', 
                              cmap = 'viridis', 
                              ax = ax)
+    return fig
 
 def plot_syntax_raster(syntax_data, syntax_raster_df, figsize = (10, 10), title = None, 
                            palette = 'husl'):
@@ -135,7 +136,8 @@ def plot_syntax_raster(syntax_data, syntax_raster_df, figsize = (10, 10), title 
     #add title
     plt.title(title)
 
-    plt.show()
+    #plt.show()
+    return fig
 
 def plot_spectrogram_with_labels(syll_df, song_folder_path, Bird_ID, song_file = None, song_file_index = None, figsize = (80, 10), 
                                  cmap = 'tab20',  add_legend = True, fontsize = 24):
@@ -247,6 +249,8 @@ def plot_spectrogram_with_labels(syll_df, song_folder_path, Bird_ID, song_file =
         markers  = [plt.Line2D([0, 0], [0, 0],  color = color, marker = 'o', linestyle = '') for color in color_dict.values()]
         ax.legend(markers, color_dict.keys(), numpoints = 1, facecolor = 'black', 
                   labelcolor = 'white', markerscale = 3, fontsize = fontsize, loc = 'upper right')
+        
+    return fig, ax, song_file_name
     
 def plot_syll(song, onset, offset, padding = 0, figsize = (5,5), title = None):
     """
