@@ -16,6 +16,7 @@ the `github repository <https://github.com/theresekoch/avn>`_
    :maxdepth: 1
 
    installation
+   AVN_GUI
 
 .. toctree::
    :caption: Tutorials
