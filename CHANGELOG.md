@@ -1,6 +1,6 @@
 # Changelog
 
-## v.0.5.1 (05/08/2024)
+## v.0.5.2 (05/08/2024)
 
 ### Bug Fixes
 - Plotting functions now return the figure object, don't just display it. Better for use outside jupyter notebook. 
