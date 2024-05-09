@@ -1,6 +1,11 @@
 # Changelog
 
-similarity_scoring_module
+## v.0.5.1 (05/08/2024)
+
+### Bug Fixes
+- Plotting functions now return the figure object, don't just display it. Better for use outside jupyter notebook. 
+
+
 ## v.0.5.0 (05/05/2024)
 
 ### Feature
