@@ -58,7 +58,7 @@ def plot_spectrogram(spectrogram, sample_rate, ax = None, figsize = (20, 5)):
 
     """
     #Create plot with given dimensions
-    plt.figure(figsize = figsize, facecolor = 'white')
+    fig = plt.figure(figsize = figsize, facecolor = 'white')
     #plot spectrogram
     img = librosa.display.specshow(spectrogram, sr = sample_rate, 
                              hop_length = 512 / 4, 
