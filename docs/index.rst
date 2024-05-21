@@ -7,8 +7,8 @@ Welcome to avn's documentation!
 ===============================
 `avn` (Avian Vocalization Network, pronounced 'avian') is a python package for zebra finch song analysis. It currently provides
 functions necessary for threshold-based syllable segmentation, syntax analysis for songs with user-provided syllable labels, syllable timing and song rhythm feature calculation, and calculation of a suite of acoustic features based on `Sound Analysis Pro <http://soundanalysispro.com/>`_. For more information, 
-please contact `Therese Koch <mailto:therese.koch@utsouthwestern.edu>`_ or consult 
-the `github repository <https://github.com/theresekoch/avn>`_
+please contact `Therese Koch <mailto:therese.koch@utsouthwestern.edu>`_ , consult 
+the `github repository <https://github.com/theresekoch/avn>`_ , or check out our `pre-print <https://doi.org/10.1101/2024.05.10.593561>`_ !
 
 
 .. toctree::
