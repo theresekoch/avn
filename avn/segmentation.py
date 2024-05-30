@@ -589,7 +589,7 @@ class MFCC(Segmenter):
             song.bandpass_filter(lower_cutoff, upper_cutoff)
         
         #calculate first MFCC
-        mfcc = librosa.feature.mfcc(song.data, song.sample_rate, n_mfcc = 1,
+        mfcc = librosa.feature.mfcc(y=song.data, sr=song.sample_rate, n_mfcc = 1,
                                     hop_length = hop_length, 
                                     win_length = n_fft)[0, :]
                                   
@@ -658,7 +658,7 @@ class MFCCDerivative(Segmenter):
             song.bandpass_filter(lower_cutoff, upper_cutoff)
         
         #calculate first MFCC
-        mfcc = librosa.feature.mfcc(song.data, song.sample_rate, n_mfcc = 1, 
+        mfcc = librosa.feature.mfcc(y=song.data, sr=song.sample_rate, n_mfcc = 1, 
                                     hop_length = hop_length, 
                                     win_length = n_fft)[0, :]
         
